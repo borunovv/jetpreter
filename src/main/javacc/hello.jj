@@ -1,0 +1,71 @@
+options {
+    STATIC=false;
+}
+
+PARSER_BEGIN(Program)
+    package com.borunovv.jetpreter.javacc.generated;
+    public class Program {}
+PARSER_END(Program)
+
+SKIP : { " " | "\t"}
+
+TOKEN : { < KW_VAR     : "var" > }
+TOKEN : { < FLOAT      : <INTEGER> "." | <INTEGER> "." <DIGITS> | (<NEGATE>)? "." <DIGITS> > }
+TOKEN : { < INTEGER    : (<NEGATE>)? <DIGITS> > }
+TOKEN : { < IDENTIFIER : <LETTER> (<LETTER> | <DIGIT>)* >}
+
+TOKEN : { < EOL        : "\n" | "\r" | "\r\n" > }
+TOKEN : { < PLUS       : "+" > }
+TOKEN : { < MINUS      : "-" > }
+TOKEN : { < EQUALS     : "=" > }
+TOKEN : { < NEGATE     : <MINUS> > }
+TOKEN : { < #LETTER    : ["A" - "Z", "a" - "z", "_"] > }
+TOKEN : { < #DIGIT     : (["0"-"9"]) > }
+TOKEN : { < #DIGITS     : (<DIGIT>)+ > }
+
+
+
+
+
+void var() :
+{}
+{
+    <KW_VAR>
+}
+
+void program() :
+{}
+{
+    (line())*
+    <EOF>
+}
+
+void empty_line() :
+{}
+{
+    <EOL>
+}
+
+void line() :
+{}
+{
+    empty_line() | statement() <EOL>
+}
+
+void statement() :
+{}
+{
+    var_declaration()
+}
+
+void var_declaration() :
+{}
+{
+   <KW_VAR> <IDENTIFIER> <EQUALS> number()
+}
+
+void number() :
+{}
+{
+   <INTEGER> | <FLOAT>
+}
