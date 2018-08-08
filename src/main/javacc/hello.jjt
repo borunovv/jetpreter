@@ -1,0 +1,186 @@
+/*
+    == Full Grammar EBNF ==
+
+    -- Terminals --
+
+    whitespace       = " " | "\t"
+    eol              = "\n" | "\r" | "\r\n"
+    kw_print         = "print"
+    kw_out           = "out"
+    kw_var           = "var"
+    letter           = ["a"-"z""A"-"Z"]
+    digit            = ["0"-"9"]
+    add_operator     = "+" | "-"
+    mul_operator     = "*" | "/"
+    power_operator   = "^"
+    identifier       = letter (letter | digit | "_")*
+    quoted_str       = '"' (~['"'])* '"'
+    int              = ["-"] (digit)+
+    float            = ["-"] ((digit)+ "." (digit)*  |  "." (digit)+)
+
+    -- Non terminals--
+
+    program              = (line)* EOF
+    line                 = [statement] eol
+    statement            = io_procedure | var_declaration | var_assignment
+
+    var_declaration      =  kw_var variable_id "=" expession
+    var_assignment       =  variable_id "=" expession
+    io_procedure         =  io_print | io_out
+    io_print             =  kw_print quoted_str
+    io_out               =  kw_out expession
+
+    expession            =  priority0_operation
+    priority0_operation  =  priority1_operation (add_operator priority1_operation)*
+    priority1_operation  =  priority2_operation (mul_op priority2_operation)*
+    priority2_operation  =  factor [power_operator factor]
+    factor               =  number | variable_id | function_call | "(" priority0_operation ")"
+
+    function_call        =  identifier "(" parameter_list ")"
+    parameter_list       =  [ parameter ("," parameter)* ]
+    parameter            =  expession | lambda
+    lambda               =  variable_id (variable_id)* "->" expession
+
+    number               =  int | float
+    variable_id          =  identifier
+
+*/
+
+options {
+    STATIC=false;
+    TRACK_TOKENS=true;
+}
+
+PARSER_BEGIN(ProgramParser)
+    package com.borunovv.jetpreter.javacc.generated;
+    public class ProgramParser {
+        /**
+         * Returns the root node of the AST.
+         * It only makes sense to call this after a successful parse.
+         * @return the root node
+         */
+        public Node rootNode() {
+            return jjtree.rootNode();
+        }
+    }
+PARSER_END(ProgramParser)
+
+
+SKIP : /* WHITE SPACE */
+{
+  " " | "\t"
+}
+
+TOKEN : /*KEY WORDS*/
+{
+    < KW_VAR   : "var" >
+|   < KW_PRINT : "print" >
+|   < KW_OUT   : "out" >
+}
+
+TOKEN : /* LITERALS */
+{
+    < EOL          : "\n" | "\r" | "\r\n" >
+|   < FLOAT        : <INTEGER> "." (<DIGITS>)? | (["-"])? "." <DIGITS> >
+|   < INTEGER      : (["-"])? <DIGITS> >
+|   < IDENTIFIER   : <LETTER> (<LETTER> | <DIGIT> | "_")* >
+|   < QUOTED_STR   : "\"" (~["\""])* "\"">
+|   < EQUALS       : "=" >
+|   < ADD_OPERATOR : "+" | "-" >
+|   < MUL_OPERATOR : "*" | "/" >
+|   < POW_OPERATOR : "^" >
+|   < #LETTER      : ["A" - "Z", "a" - "z"] >
+|   < #DIGIT       : ["0" - "9"] >
+|   < #DIGITS      : (<DIGIT>)+ >
+}
+
+void Program() :
+{}
+{
+    (Line())* <EOF>
+}
+
+void Line() :
+{}
+{
+    [ Statement() ] <EOL>
+}
+
+void Statement() #void:
+{}
+{
+    (
+        VarDeclaration()
+      |
+        VarAssignment()
+      |
+        IOStatement()
+    )
+}
+
+
+void VarDeclaration() :
+{}
+{
+   <KW_VAR> <IDENTIFIER> <EQUALS> Expression()
+}
+
+void VarAssignment() :
+{}
+{
+   <IDENTIFIER> <EQUALS> Expression()
+}
+
+void IOStatement() #void:
+{}
+{
+    (
+        PrintStatement()
+      |
+        OutStatement()
+    )
+}
+
+
+void PrintStatement() :
+{}
+{
+    <KW_PRINT> <QUOTED_STR>
+}
+
+
+void OutStatement() :
+{}
+{
+    <KW_OUT> Expression()
+}
+
+
+void Expression() #void:
+{}
+{
+    Number()
+}
+
+
+void Number() #void :
+{}
+{
+    (
+        IntNumber()
+      |
+        FloatNumber()
+    )
+}
+
+void IntNumber() :
+{}
+{
+    <INTEGER>
+}
+
+void FloatNumber() :
+{}
+{
+    <FLOAT>
+}
