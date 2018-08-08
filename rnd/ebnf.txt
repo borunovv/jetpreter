@@ -1,39 +1,48 @@
-/* Terminals */
-eol              = "\n" | "\r" | "\r\n"
-kw_print         = "print"
-kw_out           = "out"
-kw_var           = "var"
-alpha            = ["a"-"z""A"-"Z"]
-digit            = ["0"-"9"]
-add_operator     = "+" | "-"
-mul_operator     = "*" | "/"
-power_operator   = "^"
-identifier       = alpha (alpha | digit | "_")*
-quoted_str       = '"' (~['"'])* '"'
-int              = ["-"] (digit)+
-float            = ["-"] (digit)+ "." (digit)*  |  "." (digit)+
+/* 
+    == Full Grammar EBNF ==
+    
+    -- Terminals --
 
-             
-/*Non terminals*/
-program              = (line)* EOF
-line                 = (io_procedure | var_declaration | var_assignment) eol
+    whitespace       = " " | "\t"
+    eol              = "\n" | "\r" | "\r\n"
+    kw_print         = "print"
+    kw_out           = "out"
+    kw_var           = "var"
+    letter           = ["a"-"z""A"-"Z"]
+    digit            = ["0"-"9"]
+    add_operator     = "+" | "-"
+    mul_operator     = "*" | "/"
+    power_operator   = "^"
+    identifier       = letter (letter | digit | "_")*
+    quoted_str       = '"' (~['"'])* '"'
+    int              = ["-"] (digit)+
+    float            = ["-"] ((digit)+ "." (digit)*  |  "." (digit)+)
 
-var_declaration      =  kw_var variable_id "=" expession
-var_assignment       =  variable_id "=" expession
-io_procedure         =  io_print | io_out
-io_print             =  kw_print quoted_str
-io_out               =  kw_out expession
 
-expession            =  priority0_operation
-priority0_operation  =  priority1_operation (add_operator priority1_operation)*
-priority1_operation  =  priority2_operation (mul_op priority2_operation)*
-priority2_operation  =  factor [power_operator factor]
-factor               =  number | variable_id | function_call | "(" priority0_operation ")"
+    -- Non terminals--
 
-function_call        =  identifier "(" parameter_list ")"
-parameter_list       =  [ parameter ("," parameter)* ]
-parameter            =  expession | lambda
-lambda               =  variable_id (variable_id)* "->" expession
+    program              = (line)* EOF
+    line                 = [statement] eol
+    statement            = io_procedure | var_declaration | var_assignment
 
-number               =  int | float
-variable_id          =  identifier
+    var_declaration      =  kw_var variable_id "=" expession
+    var_assignment       =  variable_id "=" expession
+    io_procedure         =  io_print | io_out
+    io_print             =  kw_print quoted_str
+    io_out               =  kw_out expession
+
+    expession            =  priority0_operation
+    priority0_operation  =  priority1_operation (add_operator priority1_operation)*
+    priority1_operation  =  priority2_operation (mul_op priority2_operation)*
+    priority2_operation  =  factor [power_operator factor]
+    factor               =  number | variable_id | function_call | "(" priority0_operation ")"
+
+    function_call        =  identifier "(" parameter_list ")"
+    parameter_list       =  [ parameter ("," parameter)* ]
+    parameter            =  expession | lambda
+    lambda               =  variable_id (variable_id)* "->" expession
+
+    number               =  int | float
+    variable_id          =  identifier
+
+*/
