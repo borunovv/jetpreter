@@ -1,13 +1,7 @@
 package com.borunovv.jetpreter;
 
-import com.borunovv.jetpreter.ast.ASTNode;
-import com.borunovv.jetpreter.ast.ASTNodeFactory;
-import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.interpreter.Interpreter;
-import com.borunovv.jetpreter.javacc.generated.Node;
-import com.borunovv.jetpreter.javacc.generated.ProgramParser;
-
-import java.io.StringReader;
+import com.borunovv.jetpreter.interpreter.InterpreterSession;
 
 public class Main {
 
@@ -16,24 +10,34 @@ public class Main {
             "var x = 5 + 6 +.1 - 1.5 * 3 / 2 ^ -2.1 \n" +
             "var y = 3^2 + 1 \n" +
             "print \"result=\" \n" +
-            "out x * x ^ 2 * y\n";
+            "\n" +
+            "out x * x ^ 2 * y / 1\n";
 
     public static void main(String[] args) throws Exception {
-        Interpreter interpreter = new Interpreter(System.out::print);
-        interpreter.verify(PROGRAM);
+        Interpreter interpreter = new Interpreter(PROGRAM);
+        boolean verifySuccess = true;
+        for (int i = 0; i < interpreter.linesCount(); ++i) {
+            String error = interpreter.verifyLine(i);
+            if (error != null) {
+                System.out.println(">>Error in line #" + i + ": " + error);
+                verifySuccess = false;
+            }
+        }
 
-        ProgramParser parser = new ProgramParser(new StringReader(PROGRAM));
-        parser.Program();
-        Node root = parser.rootNode();
+        if (verifySuccess) {
+            InterpreterSession session = interpreter.startInterpretation(System.out::print);
+            for (int i = 0; i < session.linesCount(); ++i) {
+                try {
+                    session.interpretNextLine();
+                } catch (Exception e) {
+                    System.out.println("\n\n>>Error in line #" + i + ": " + e.getMessage());
+                    break;
+                }
+            }
+        }
 
-        ASTNode astRoot = ASTNodeFactory.buildTree(root);
-
-        StringBuilder sb = new StringBuilder();
-        astRoot.dump(sb, 0);
-        System.out.println(sb.toString());
-
-        Context ctx = new Context(System.out::print);
-        System.out.println("\nOutput:");
-        astRoot.interpret(ctx);
+//        StringBuilder sb = new StringBuilder();
+//        astRoot.dump(sb, 0);
+//        System.out.println(sb.toString());
     }
 }

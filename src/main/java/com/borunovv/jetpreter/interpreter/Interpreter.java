@@ -1,40 +1,47 @@
 package com.borunovv.jetpreter.interpreter;
 
-import com.borunovv.jetpreter.ast.ASTNode;
-import com.borunovv.jetpreter.ast.ASTNodeFactory;
-import com.borunovv.jetpreter.javacc.generated.Node;
-import com.borunovv.jetpreter.javacc.generated.ParseException;
-import com.borunovv.jetpreter.javacc.generated.ProgramParser;
-
-import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author borunovv
  */
 public class Interpreter {
-    /**
-     * Return syntax error description or null is syntax is fine.
-     *
-     * @param program program source code
-     * @return syntax error description or null is syntax is fine.
-     */
-    public String verify(String program) {
-        try {
-            parseToNativeTree(program);
-        } catch (ParseException e) {
-            return e.getMessage();
+    private List<ProgramLine> lines = new ArrayList<>();
+
+    public Interpreter() {
+    }
+
+    public Interpreter(String program) {
+        updateProgram(program);
+    }
+
+    public void updateProgram(String program) {
+        String[] items  = program.split("\n");
+        for (int i = 0; i < items.length; i++) {
+            String line = items[i].trim();
+            if (i < lines.size()) {
+                lines.get(i).update(line);
+            } else {
+                lines.add(new ProgramLine(line));
+            }
         }
-        return null;
+
+        if (items.length < lines.size()) {
+            lines = lines.subList(0, items.length);
+        }
     }
 
-    public void run(String program, Context ctx) throws ParseException, InterpretException {
-        ASTNode astRoot = ASTNodeFactory.buildTree(parseToNativeTree(program));
-        astRoot.interpret(ctx);
+    public int linesCount() {
+        return lines.size();
     }
 
-    private Node parseToNativeTree(String program) throws ParseException {
-        ProgramParser parser = new ProgramParser(new StringReader(program));
-        parser.Program();
-        return parser.rootNode();
+    public String verifyLine(int index) {
+        return lines.get(index).verify();
+    }
+
+    public InterpreterSession startInterpretation(Consumer<String> output) {
+        return new InterpreterSession(new ArrayList<>(lines), new Context(output));
     }
 }
