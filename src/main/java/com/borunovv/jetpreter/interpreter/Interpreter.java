@@ -18,13 +18,15 @@ public class Interpreter {
     }
 
     public void updateProgram(String program) {
-        String[] items  = program.split("\n");
+        String[] items = program.split("\n");
         for (int i = 0; i < items.length; i++) {
             String line = items[i].trim();
-            if (i < lines.size()) {
-                lines.get(i).update(line);
-            } else {
-                lines.add(new ProgramLine(line));
+            if (!line.isEmpty()) {
+                if (i < lines.size()) {
+                    lines.get(i).update(line);
+                } else {
+                    lines.add(new ProgramLine(line, i + 1));
+                }
             }
         }
 
@@ -37,8 +39,12 @@ public class Interpreter {
         return lines.size();
     }
 
-    public String verifyLine(int index) {
-        return lines.get(index).verify();
+    public String verifyLine(int lineIndex) {
+        return lines.get(lineIndex).verify();
+    }
+
+    public int getLineNumberInSourceCode(int lineIndex) {
+        return lines.get(lineIndex).getLineNumberInSourceCode();
     }
 
     public InterpreterSession startInterpretation(Consumer<String> output) {

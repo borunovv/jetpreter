@@ -13,8 +13,10 @@ public class ProgramLine {
     private String code;
     private ASTNode node;
     private String lastError;
+    private final int lineNumberInSourceCode;
 
-    public ProgramLine(String code) {
+    public ProgramLine(String code, int lineNumberInSourceCode) {
+        this.lineNumberInSourceCode = lineNumberInSourceCode;
         update(code);
     }
 
@@ -33,6 +35,10 @@ public class ProgramLine {
                         code + "\n";
     }
 
+    public int getLineNumberInSourceCode() {
+        return lineNumberInSourceCode;
+    }
+
     public String verify() {
         if (node == null && this.lastError == null && !code.isEmpty()) {
             try {
@@ -46,13 +52,15 @@ public class ProgramLine {
         return this.lastError;
     }
 
-    public void interpret(Context ctx) throws InterpretException {
+    public String interpret(Context ctx) throws InterpretException {
         String error = verify();
-        if (error != null) {
-            throw new InterpretException(error);
+        if (error == null && !code.isEmpty()) {
+            try {
+                node.interpret(ctx);
+            } catch (Exception e) {
+                error = e.getMessage();
+            }
         }
-        if (!code.isEmpty()) {
-            node.interpret(ctx);
-        }
+        return error;
     }
 }

@@ -24,11 +24,21 @@ public class InterpreterSession {
         return nextLine < linesCount();
     }
 
-    public void interpretNextLine() {
+    public int getNextLineNumberInSourceCode() {
+        ensureHasNextLine();
+        return lines.get(nextLine).getLineNumberInSourceCode();
+    }
+
+    public String interpretNextLine() {
+        ensureHasNextLine();
+        String error = lines.get(nextLine).interpret(ctx);
+        nextLine++;
+        return error;
+    }
+
+    private void ensureHasNextLine() {
         if (! hasNextLine()) {
             throw new InterpretException("No more lines to interpret!");
         }
-        lines.get(nextLine).interpret(ctx);
-        nextLine++;
     }
 }
