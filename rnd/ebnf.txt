@@ -21,9 +21,9 @@
 
     -- Non terminals--
 
-    program              = (line)* EOF
-    line                 = [statement] eol
-    statement            = io_procedure | var_declaration | var_assignment
+    program              =  (line)* EOF
+    line                 =  [statement] eol
+    statement            =  io_procedure | var_declaration | var_assignment
 
     var_declaration      =  kw_var variable_id "=" expession
     var_assignment       =  variable_id "=" expession

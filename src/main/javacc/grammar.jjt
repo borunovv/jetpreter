@@ -8,6 +8,7 @@
     kw_print         = "print"
     kw_out           = "out"
     kw_var           = "var"
+    lambda_arrow     = "->"
     letter           = ["a"-"z""A"-"Z"]
     digit            = ["0"-"9"]
     add_operator     = "+" | "-"
@@ -30,16 +31,16 @@
     io_print             =  kw_print quoted_str
     io_out               =  kw_out expession
 
-    expession            =  priority0_operation
-    priority0_operation  =  priority1_operation (add_operator priority1_operation)*
-    priority1_operation  =  priority2_operation (mul_op priority2_operation)*
-    priority2_operation  =  factor [power_operator factor]
-    factor               =  number | variable_id | function_call | "(" priority0_operation ")"
+    expression            =  add_operation
+    add_operation        =  mul_operation [add_operator mul_operation]*
+    mul_operation        =  power_operation [mul_operator power_operation]*
+    power_operation      =  factor [power_operator factor]
+    factor               =  number | variable_id | function_call | "(" expression ")"
 
     function_call        =  identifier "(" parameter_list ")"
     parameter_list       =  [ parameter ("," parameter)* ]
-    parameter            =  expession | lambda
-    lambda               =  variable_id (variable_id)* "->" expession
+    parameter            =  expression | lambda
+    lambda               =  variable_id (variable_id)* lambda_arrow expression
 
     number               =  int | float
     variable_id          =  identifier
@@ -81,14 +82,14 @@ TOKEN : /*KEY WORDS*/
 TOKEN : /* LITERALS */
 {
     < EOL          : "\n" | "\r" | "\r\n" >
+|   < ADD_OPERATOR : "+" | "-" >
+|   < MUL_OPERATOR : "*" | "/" >
+|   < POW_OPERATOR : "^" >
+|   < EQUALS       : "=" >
 |   < FLOAT        : <INTEGER> "." (<DIGITS>)? | (["-"])? "." <DIGITS> >
 |   < INTEGER      : (["-"])? <DIGITS> >
 |   < IDENTIFIER   : <LETTER> (<LETTER> | <DIGIT> | "_")* >
 |   < QUOTED_STR   : "\"" (~["\""])* "\"">
-|   < EQUALS       : "=" >
-|   < ADD_OPERATOR : "+" | "-" >
-|   < MUL_OPERATOR : "*" | "/" >
-|   < POW_OPERATOR : "^" >
 |   < #LETTER      : ["A" - "Z", "a" - "z"] >
 |   < #DIGIT       : ["0" - "9"] >
 |   < #DIGITS      : (<DIGIT>)+ >
@@ -125,11 +126,13 @@ void VarDeclaration() :
    <KW_VAR> <IDENTIFIER> <EQUALS> Expression()
 }
 
+
 void VarAssignment() :
 {}
 {
    <IDENTIFIER> <EQUALS> Expression()
 }
+
 
 void IOStatement() #void:
 {}
@@ -159,7 +162,55 @@ void OutStatement() :
 void Expression() #void:
 {}
 {
-    Number()
+    AddOperation()
+}
+
+
+void AddOperation() :
+{}
+{
+    MulOperation() ( AddOperator() MulOperation() )*
+}
+
+
+void MulOperation() :
+{}
+{
+    PowerOperation() ( MulOperator() PowerOperation() )*
+}
+
+
+void PowerOperation() :
+{}
+{
+    Factor() [ PowerOperator() Factor() ]
+}
+
+void Factor() #void :
+{}
+{
+    Number() | VarId() |     "(" Expression() ")"
+}
+
+
+void AddOperator() :
+{}
+{
+    <ADD_OPERATOR>
+}
+
+
+void MulOperator() :
+{}
+{
+    <MUL_OPERATOR>
+}
+
+
+void PowerOperator() :
+{}
+{
+    <POW_OPERATOR>
 }
 
 
@@ -173,6 +224,7 @@ void Number() #void :
     )
 }
 
+
 void IntNumber() :
 {}
 {
@@ -184,3 +236,10 @@ void FloatNumber() :
 {
     <FLOAT>
 }
+
+void VarId() :
+{}
+{
+    <IDENTIFIER>
+}
+

@@ -38,6 +38,20 @@ public class ASTNodeFactory {
                 return new ASTIntNumberNode(simpleNode);
             case JJTFLOATNUMBER:
                 return new ASTFloatNumberNode(simpleNode);
+            case JJTADDOPERATION:
+                return new ASTAddOperationNode(simpleNode);
+            case JJTMULOPERATION:
+                return new ASTMulOperationNode(simpleNode);
+            case JJTPOWEROPERATION:
+                return new ASTPowerOperationNode(simpleNode);
+            case JJTADDOPERATOR :
+                return new ASTAddOperatorNode(simpleNode);
+            case JJTMULOPERATOR :
+                return new ASTMulOperatorNode(simpleNode);
+            case JJTPOWEROPERATOR :
+                return new ASTPowerOperatorNode(simpleNode);
+            case JJTVARID :
+                return new ASTVarIdNode(simpleNode);
 
             default:
                 throw new IllegalArgumentException("Unimplemented node type: " + simpleNode.getId());

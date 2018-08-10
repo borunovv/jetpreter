@@ -1,6 +1,8 @@
 package com.borunovv.jetpreter.ast;
 
+import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
+import com.borunovv.jetpreter.javacc.generated.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ public abstract class ASTNode {
         children.add(child);
     }
 
+    public abstract void interpret(Context ctx);
+
     public void dump(StringBuilder writer, int level) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; ++i) {
@@ -31,6 +35,14 @@ public abstract class ASTNode {
         for (ASTNode child : children) {
             child.dump(writer, level + 1);
         }
+    }
+
+    protected Token getFirstToken() {
+        return wrappedNode.jjtGetFirstToken();
+    }
+
+    protected Token getLastToken() {
+        return wrappedNode.jjtGetLastToken();
     }
 
     @Override
