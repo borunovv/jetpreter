@@ -1,5 +1,7 @@
 package com.borunovv.jetpreter.interpreter;
 
+import com.borunovv.jetpreter.core.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,10 +20,12 @@ public class Interpreter {
     }
 
     public void updateProgram(String program) {
-        String[] items = program.split("\n");
+        String[] items = StringUtils.ensureString(program).split("\n");
+        int nonEmptyLinesCount = 0;
         for (int i = 0; i < items.length; i++) {
             String line = items[i].trim();
             if (!line.isEmpty()) {
+                nonEmptyLinesCount++;
                 if (i < lines.size()) {
                     lines.get(i).update(line);
                 } else {
@@ -30,8 +34,8 @@ public class Interpreter {
             }
         }
 
-        if (items.length < lines.size()) {
-            lines = lines.subList(0, items.length);
+        if (nonEmptyLinesCount < lines.size()) {
+            lines = lines.subList(0, nonEmptyLinesCount);
         }
     }
 
