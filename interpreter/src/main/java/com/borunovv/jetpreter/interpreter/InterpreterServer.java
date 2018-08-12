@@ -1,5 +1,6 @@
 package com.borunovv.jetpreter.interpreter;
 
+import com.borunovv.jetpreter.core.log.Log;
 import com.borunovv.jetpreter.core.threads.WithOwnThread;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +50,7 @@ public class InterpreterServer extends WithOwnThread {
 
     @Override
     protected void onThreadStart() {
-        System.out.println("[DEBUG] InterpreterServer: started");
+        Log.trace("InterpreterServer: started");
     }
 
     @Override
@@ -58,7 +59,7 @@ public class InterpreterServer extends WithOwnThread {
         cancelCurrentTask();
         currentProgramTask = tryGetPendingProgramTask();
         cancelCurrentTask();
-        System.out.println("[DEBUG] InterpreterServer: stopped");
+        Log.trace("InterpreterServer: stopped");
     }
 
     private void reset() {
@@ -122,7 +123,7 @@ public class InterpreterServer extends WithOwnThread {
     private void cancelCurrentTask() {
         if (currentProgramTask != null) {
             currentProgramTask.cancel();
-            System.out.println("[DEBUG] Current task cancelled.");
+            Log.trace("Current task cancelled.");
             currentProgramTask = null;
         }
     }

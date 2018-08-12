@@ -8,6 +8,8 @@ import com.borunovv.jetpreter.javacc.generated.Token;
  * @author borunovv
  */
 public class ASTPrintStatementNode extends ASTNode {
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     public ASTPrintStatementNode(SimpleNode wrappedNode) {
         super(wrappedNode);
     }
@@ -24,7 +26,7 @@ public class ASTPrintStatementNode extends ASTNode {
     }
 
     private String unEscape(String str) {
-        return str.replaceAll("\\\\n", "\n")
+        return str.replaceAll("\\\\n", LINE_SEPARATOR)
                 .replaceAll("\\\\t", "\t");
     }
 }

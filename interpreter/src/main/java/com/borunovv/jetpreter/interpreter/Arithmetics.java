@@ -48,7 +48,7 @@ public class Arithmetics {
 
     public static Object power(Object left, Object right) {
         ensureScalars(left, right);
-        if (Math.abs(toDouble(left)) == 0.0 && toDouble(left) < 0.0) {
+        if (Math.abs(toDouble(left)) == 0.0 && toDouble(right) < 0.0) {
             throw new InterpretException("Division by zero");
         }
 

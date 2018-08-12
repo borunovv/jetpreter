@@ -24,6 +24,10 @@ public class ASTVarDeclarationNode extends ASTNode {
             throw new InterpretException("Bad variable name: '" + varName + "' (reserved keyword).");
         }
 
+        if (ctx.hasVariable(varName)) {
+            throw new InterpretException("Variable '" + varName + "' already declared.");
+        }
+
         ASTNode expr = children.get(0);
         expr.interpret(ctx);
         Object value = ctx.pop();
