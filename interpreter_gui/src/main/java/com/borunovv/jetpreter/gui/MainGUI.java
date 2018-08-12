@@ -1,5 +1,6 @@
 package com.borunovv.jetpreter.gui;
 
+import com.borunovv.jetpreter.core.log.Log;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,11 +10,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class MainGUI {
-
     private Display display;
     private Shell shell;
 
     public void start() {
+        Log.info("GUI started");
         try {
             display = new Display();
             shell = new Shell(display);
@@ -21,6 +22,7 @@ public class MainGUI {
             startGUILoop(display, shell);
         } finally {
             display.dispose();
+            Log.info("GUI stopped");
         }
     }
 

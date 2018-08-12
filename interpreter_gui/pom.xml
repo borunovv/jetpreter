@@ -8,6 +8,7 @@
     <properties>
         <main.class>com.borunovv.jetpreter.gui.Main</main.class>
 
+        <org.slf4j-version>1.5.10</org.slf4j-version>
         <swt.version>4.6</swt.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,9 +30,34 @@
             <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${org.slf4j-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
