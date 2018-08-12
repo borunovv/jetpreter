@@ -12,11 +12,12 @@ import org.eclipse.swt.widgets.Text;
 
 
 public class MainGUI implements Model {
-    private Controller controller;
+    private static final String INITIAL_SAMPLE_PROGRAM = "print \"Hello, world!\\n\"\n";
+
+    private final Controller controller;
 
     private Display display;
     private Shell shell;
-
     private Text sourceCodeTextArea;
     private Text outputTextArea;
     private ProgressBar progressBar;
@@ -26,22 +27,34 @@ public class MainGUI implements Model {
     }
 
     public void start() {
-        Log.info("GUI started");
+        Log.info("Application started");
         try {
-            display = new Display();
-            shell = new Shell(display);
-            init();
-            controller.setUp();
-            controller.onSourceCodeChanged(sourceCodeTextArea.getText());
-            startGUILoop(display, shell);
+            initGui();
+            initController();
+            startGUILoop();
         } finally {
-            controller.tearDown();
-            display.dispose();
-            Log.info("GUI stopped");
+            tearDownController();
+            tearDownGui();
         }
+        Log.info("Application stopped");
     }
 
-    private void init() {
+    private void tearDownGui() {
+        display.dispose();
+    }
+
+    private void tearDownController() {
+        controller.tearDown();
+    }
+
+    private void initController() {
+        controller.setUp();
+        controller.onSourceCodeChanged(sourceCodeTextArea.getText());
+    }
+
+    private void initGui() {
+        display = new Display();
+        shell = new Shell(display);
         shell.setText("Jetpreter 1.0");
 
         GridLayout gridLayout = new GridLayout(2, false);
@@ -53,7 +66,7 @@ public class MainGUI implements Model {
         gridData.grabExcessHorizontalSpace = true;
         sourceCodeTextArea.setLayoutData(gridData);
         sourceCodeTextArea.setBackground(new Color(display, 255, 255, 240));
-        sourceCodeTextArea.setText("print \"Hello, world!\\n\"\n");
+        sourceCodeTextArea.setText(INITIAL_SAMPLE_PROGRAM);
         sourceCodeTextArea.setSelection(sourceCodeTextArea.getText().length());
 
         sourceCodeTextArea.addModifyListener(e -> controller.onSourceCodeChanged(((Text) e.widget).getText()));
@@ -77,7 +90,7 @@ public class MainGUI implements Model {
         shell.open();
     }
 
-    private void startGUILoop(Display display, Shell shell) {
+    private void startGUILoop() {
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch())
                 display.sleep();
@@ -119,7 +132,7 @@ public class MainGUI implements Model {
         executeInGUIThread(() -> {
             if (!outputTextArea.isDisposed()) {
                 boolean needNL = !outputTextArea.getText().isEmpty() && !outputTextArea.getText().endsWith("\n");
-                outputTextArea.setText(outputTextArea.getText() + (needNL  ? "\n" : "") + text);
+                outputTextArea.setText(outputTextArea.getText() + (needNL ? "\n" : "") + text);
                 outputTextArea.setSelection(outputTextArea.getText().length());
             }
         });
@@ -127,6 +140,10 @@ public class MainGUI implements Model {
 
     @Override
     public void clearOutput() {
-        executeInGUIThread(() -> outputTextArea.setText(""));
+        executeInGUIThread(() -> {
+            if (!outputTextArea.isDisposed()) {
+                outputTextArea.setText("");
+            }
+        });
     }
 }

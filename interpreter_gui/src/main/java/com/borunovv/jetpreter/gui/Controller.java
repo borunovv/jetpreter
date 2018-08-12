@@ -39,7 +39,6 @@ public class Controller {
 
         if (System.currentTimeMillis() - lastUserTypingTime > USER_TYPING_IDLE_TIMEOUT_MS) {
             if (pendingProgram != null) {
-                Log.trace("Submitting pendingProgram: \n" + pendingProgram + "\n");
                 cancelCurrentTask();
                 model.clearOutput();
                 currentTask = new Task().start(pendingProgram);
@@ -65,20 +64,20 @@ public class Controller {
         private InterpreterServer.IProgramTask serverTask;
         private volatile boolean disableOutput;
 
-        public Task() {
+        Task() {
         }
 
-        public Task start(String program) {
+        Task start(String program) {
             this.serverTask = server.submitProgram(program, this::writeToOutput, this::writeToErrors);
             return this;
         }
 
-        public void cancel() {
+        void cancel() {
             disableOutput = true;
             serverTask.cancel();
         }
 
-        public double getProgress() {
+        double getProgress() {
             return serverTask.getProgress();
         }
 
