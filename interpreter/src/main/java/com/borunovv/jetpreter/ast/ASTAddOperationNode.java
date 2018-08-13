@@ -20,6 +20,7 @@ public class ASTAddOperationNode extends ASTNode {
         leftOperand.interpret(ctx);
 
         while (index < children.size()) {
+            ctx.checkCancel();
             ASTNode operation = children.get(index++);
             ASTNode rightOperand = children.get(index++);
             rightOperand.interpret(ctx);

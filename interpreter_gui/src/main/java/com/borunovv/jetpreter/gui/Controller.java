@@ -5,13 +5,15 @@ import com.borunovv.jetpreter.interpreter.InterpreterServer;
 
 public class Controller {
 
-    public static final int USER_TYPING_IDLE_TIMEOUT_MS = 1000;
+    public static final int USER_INACTIVITY_TIMEOUT_MS = 1000;
+    public static final int IDLE_PROCESSING_PERIOD_MS = 50;
 
-    private Model model;
-    private InterpreterServer server = new InterpreterServer();
+    private final Model model;
+    private final InterpreterServer server = new InterpreterServer();
     private Task currentTask;
     private String pendingProgram;
-    private long lastUserTypingTime = 0;
+    private long lastUserActivityTime = 0;
+    private long lastIdleProcessedTime = 0;
 
 
     public Controller(Model model) {
@@ -24,36 +26,55 @@ public class Controller {
 
     void tearDown() {
         try {
-            server.stopAndWait();
+            cancelCurrentTask();
+            server.ensureStopped();
         } catch (InterruptedException e) {
             Log.error("Controller: Error while wait server stop", e);
         }
     }
 
     void onIdle() {
-        if (currentTask != null) {
-            model.setProgress(currentTask.getProgress());
-        }
-
-        if (System.currentTimeMillis() - lastUserTypingTime > USER_TYPING_IDLE_TIMEOUT_MS) {
-            if (pendingProgram != null) {
-                cancelCurrentTask();
-                model.clearOutput();
-                currentTask = new Task().start(pendingProgram);
-                pendingProgram = null;
-            }
+        boolean canProcessIdle = System.currentTimeMillis() - lastIdleProcessedTime >= IDLE_PROCESSING_PERIOD_MS;
+        if (canProcessIdle) {
+            updateCurrentProgress();
+            startBackgroundInterpretationIfNeed();
+            lastIdleProcessedTime = System.currentTimeMillis();
         }
     }
 
     void onSourceCodeChanged(String program) {
-        lastUserTypingTime = System.currentTimeMillis();
+        lastUserActivityTime = System.currentTimeMillis();
         pendingProgram = program;
+    }
+
+    private void updateCurrentProgress() {
+        if (currentTask != null) {
+           model.setProgress(currentTask.getProgress());
+        }
+    }
+
+    private void startBackgroundInterpretationIfNeed() {
+        if (hasPendingProgram() && isUserInactive()) {
+            cancelCurrentTask();
+            currentTask = new Task().start(pendingProgram);
+            pendingProgram = null;
+        }
+    }
+
+    private boolean hasPendingProgram() {
+        return pendingProgram != null;
+    }
+
+    private boolean isUserInactive() {
+        long userInactivityTimeMs = System.currentTimeMillis() - lastUserActivityTime;
+        return userInactivityTimeMs >= USER_INACTIVITY_TIMEOUT_MS;
     }
 
     private void cancelCurrentTask() {
         if (currentTask != null) {
             currentTask.cancel();
             currentTask = null;
+            model.clearOutput();
             model.setProgress(0);
         }
     }

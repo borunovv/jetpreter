@@ -25,7 +25,9 @@ public class InterpreterTest {
         showProgram(PROGRAM);
         System.out.println("");
 
-        Interpreter interpreter = new Interpreter(PROGRAM);
+        Interpreter interpreter = new Interpreter();
+        interpreter.updateProgram(PROGRAM, null);
+
         boolean verifySuccess = true;
         for (int i = 0; i < interpreter.linesCount(); ++i) {
             String error = interpreter.verifyLine(i);
@@ -38,7 +40,7 @@ public class InterpreterTest {
         final StringWriter outputBuffer = new StringWriter();
 
         if (verifySuccess) {
-            InterpreterSession session = interpreter.startInterpretation(outputBuffer::write);
+            InterpreterSession session = interpreter.startInterpretation(outputBuffer::write, null);
             for (int i = 0; i < session.linesCount(); ++i) {
                 int lineNumberInSourceCode = session.getNextLineNumberInSourceCode();
                 String error = session.interpretNextLine();

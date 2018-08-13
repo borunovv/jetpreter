@@ -17,11 +17,12 @@ public class ASTLambdaNode extends ASTNode {
 
     @Override
     public void interpret(Context ctx) {
-        Context lambdaCtx = new Context(ctx.getOutput());
+        Context lambdaCtx = ctx.cloneForLambda();
 
         // We expected all lambda params values on the stack (form last to first).
         List<String> paramNames = getParamNames();
         for (int i = paramNames.size() - 1; i >= 0; i--) {
+            ctx.checkCancel();
             String paramName = paramNames.get(i);
             if (lambdaCtx.hasVariable(paramName)) {
                 throw new InterpretException("Lambda parameter names must be unique. Duplicated parameter name is '" + paramName + "'.");

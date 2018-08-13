@@ -26,7 +26,7 @@ public abstract class AbstractInterpreterServerTest {
 
     @After
     public void tearDown() throws InterruptedException {
-        server.stopAndWait();
+        server.ensureStopped();
     }
 
     protected void waitCondition(String conditionDescription, long millis, Callable<Boolean> condition) {

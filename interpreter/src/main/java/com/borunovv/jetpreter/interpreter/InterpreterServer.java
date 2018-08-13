@@ -17,7 +17,7 @@ public class InterpreterServer extends WithOwnThread {
     private final Interpreter interpreter = new Interpreter();
     private InterpretationState interpretationState;
     private ProgramTask currentProgramTask;
-    private volatile int debugDelayMillisPerLine = 0;
+    private int debugDelayMillisPerLine = 0;
 
     public InterpreterServer() {
     }
@@ -58,15 +58,13 @@ public class InterpreterServer extends WithOwnThread {
     protected void onThreadStop() {
         reset();
         cancelCurrentTask();
-        currentProgramTask = tryGetPendingProgramTask();
-        cancelCurrentTask();
         Log.trace("InterpreterServer: stopped");
     }
 
     private void reset() {
         state = State.READY;
         pendingProgramRef.set(null);
-        interpreter.updateProgram(null);
+        interpreter.updateProgram(null, null);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class InterpreterServer extends WithOwnThread {
     protected void onThreadIteration() {
         boolean hasNewTask = pendingProgramRef.get() != null;
         boolean needCancelCurrentTask = currentProgramTask != null
-                && (hasNewTask || currentProgramTask.isCancelled());
+                && (hasNewTask || currentProgramTask.isCanceled());
 
         if (needCancelCurrentTask) {
             cancelCurrentTask();
@@ -93,8 +91,10 @@ public class InterpreterServer extends WithOwnThread {
                 if (hasNewTask) {
                     currentProgramTask = tryGetPendingProgramTask();
                     if (currentProgramTask != null) {
-                        interpreter.updateProgram(currentProgramTask.getProgram());
-                        startVerification(currentProgramTask.getOutputConsumer(), currentProgramTask.getErrorsConsumer());
+                        interpreter.updateProgram(currentProgramTask.getProgram(), currentProgramTask);
+                        startVerification(currentProgramTask.getOutputConsumer(),
+                                currentProgramTask.getErrorsConsumer(),
+                                currentProgramTask);
                         state = State.PROCESSING;
                     }
                 }
@@ -139,11 +139,15 @@ public class InterpreterServer extends WithOwnThread {
         if (debugDelayMillisPerLine > 0) {
             sleep(debugDelayMillisPerLine);
         }
-        return interpretationState != null && interpretationState.processNextLine();
+        try {
+            return interpretationState != null && interpretationState.processNextLine();
+        } catch (CancelException ignore) {
+            return false;
+        }
     }
 
-    private void startVerification(Consumer<String> output, Consumer<String> errors) {
-        interpretationState = new InterpretationState(output, errors);
+    private void startVerification(Consumer<String> output, Consumer<String> errors, CancelSignal cancelSignal) {
+        interpretationState = new InterpretationState(output, errors, cancelSignal);
     }
 
     private void stopInterpretation() {
@@ -172,9 +176,9 @@ public class InterpreterServer extends WithOwnThread {
         private final InterpreterSession session;
         private String lastError;
 
-        public InterpretationState(Consumer<String> output, Consumer<String> errors) {
+        public InterpretationState(Consumer<String> output, Consumer<String> errors, CancelSignal cancelSignal) {
             this.errors = errors;
-            this.session = interpreter.startInterpretation(output);
+            this.session = interpreter.startInterpretation(output, cancelSignal);
         }
 
         public boolean processNextLine() {
@@ -202,10 +206,9 @@ public class InterpreterServer extends WithOwnThread {
         }
     }
 
-    public interface IProgramTask {
+    public interface IProgramTask extends CancelSignal{
         boolean isFinished();
         boolean isCompleted();
-        boolean isCancelled();
         void cancel();
         double getProgress();
     }
@@ -246,7 +249,7 @@ public class InterpreterServer extends WithOwnThread {
         }
 
         @Override
-        public boolean isCancelled() {
+        public boolean isCanceled() {
             return cancelledFlag.get();
         }
 
@@ -257,7 +260,7 @@ public class InterpreterServer extends WithOwnThread {
 
         @Override
         public boolean isFinished() {
-            return isCompleted() || isCancelled();
+            return isCompleted() || isCanceled();
         }
 
         @Override

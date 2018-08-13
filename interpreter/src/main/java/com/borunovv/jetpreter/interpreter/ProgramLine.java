@@ -61,6 +61,8 @@ public class ProgramLine {
         if (error == null && !code.isEmpty()) {
             try {
                 node.interpret(ctx);
+            } catch (CancelException e) {
+                throw e;
             } catch (Exception e) {
                 error = e.getMessage();
             }

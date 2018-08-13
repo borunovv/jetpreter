@@ -1,6 +1,7 @@
 package com.borunovv.jetpreter.gui;
 
 import com.borunovv.jetpreter.core.log.Log;
+import com.borunovv.jetpreter.core.util.SystemConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
@@ -12,10 +13,15 @@ import org.eclipse.swt.widgets.Text;
 
 
 public class MainGUI implements Model {
-    private static final String INITIAL_SAMPLE_PROGRAM = "print \"Hello, world!\\n\"\n";
+    private static final String INITIAL_SAMPLE_PROGRAM = "" +
+            "print \"Hello, world!\\n\"\n" +
+            "var n = 1000\n" +
+            "var sequence = map({0, n}, i -> (-1)^i / (2 * i + 1))\n" +
+            "var pi = 4 * reduce(sequence, 0, x y -> x + y)\n" +
+            "print \"pi = \"\n" +
+            "out pi\n";
 
     private final Controller controller;
-
     private Display display;
     private Shell shell;
     private Text sourceCodeTextArea;
@@ -27,7 +33,7 @@ public class MainGUI implements Model {
     }
 
     public void start() {
-        Log.info("Application started");
+        Log.trace("Application started");
         try {
             initGui();
             initController();
@@ -36,7 +42,7 @@ public class MainGUI implements Model {
             tearDownController();
             tearDownGui();
         }
-        Log.info("Application stopped");
+        Log.trace("Application stopped");
     }
 
     private void tearDownGui() {
@@ -68,7 +74,6 @@ public class MainGUI implements Model {
         sourceCodeTextArea.setBackground(new Color(display, 255, 255, 240));
         sourceCodeTextArea.setText(INITIAL_SAMPLE_PROGRAM);
         sourceCodeTextArea.setSelection(sourceCodeTextArea.getText().length());
-
         sourceCodeTextArea.addModifyListener(e -> controller.onSourceCodeChanged(((Text) e.widget).getText()));
 
         outputTextArea = new Text(shell, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
@@ -92,9 +97,12 @@ public class MainGUI implements Model {
 
     private void startGUILoop() {
         while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
+            if (!display.readAndDispatch()) {
+                onIdle();
                 display.sleep();
-            onIdle();
+            }
+
+
         }
     }
 
@@ -131,8 +139,9 @@ public class MainGUI implements Model {
     public void appendOutputFromNewLine(final String text) {
         executeInGUIThread(() -> {
             if (!outputTextArea.isDisposed()) {
-                boolean needNL = !outputTextArea.getText().isEmpty() && !outputTextArea.getText().endsWith("\n");
-                outputTextArea.setText(outputTextArea.getText() + (needNL ? "\n" : "") + text);
+                String currentText = outputTextArea.getText();
+                boolean needNL = !currentText.isEmpty() && !currentText.endsWith("\n");
+                outputTextArea.setText(currentText + (needNL ? SystemConstants.LINE_SEPARATOR : "") + text);
                 outputTextArea.setSelection(outputTextArea.getText().length());
             }
         });

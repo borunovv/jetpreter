@@ -18,11 +18,7 @@ public class Interpreter {
     public Interpreter() {
     }
 
-    public Interpreter(String program) {
-        updateProgram(program);
-    }
-
-    public void updateProgram(String program) {
+    public void updateProgram(String program, CancelSignal cancelSignal) {
         String[] items = StringUtils.ensureString(program).split("\n");
         Map<String, ProgramLine> newCache = new HashMap<>();
         lines = new ArrayList<>(items.length);
@@ -40,6 +36,11 @@ public class Interpreter {
             }
             lines.add(programLine);
             newCache.put(line, programLine);
+
+            if (cancelSignal.isCanceled()) {
+                lines.clear();
+                throw new CancelException(lineNumberInSourceCode, "Canceled during program updating");
+            }
         }
         cache = newCache;
     }
@@ -56,7 +57,7 @@ public class Interpreter {
         return lines.get(lineIndex).getLineNumberInSourceCode();
     }
 
-    public InterpreterSession startInterpretation(Consumer<String> output) {
-        return new InterpreterSession(new ArrayList<>(lines), new Context(output));
+    public InterpreterSession startInterpretation(Consumer<String> output, CancelSignal cancelSignal) {
+        return new InterpreterSession(new ArrayList<>(lines), new Context(output, cancelSignal));
     }
 }

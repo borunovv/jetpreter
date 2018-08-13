@@ -24,7 +24,7 @@ public abstract class WithOwnThread implements Closeable {
         return threadState.get() == ThreadState.RUNNING;
     }
 
-    public void stopAndWait() throws InterruptedException {
+    public void ensureStopped() throws InterruptedException {
         if (threadState.compareAndSet(ThreadState.RUNNING, ThreadState.STOP_REQUESTED)) {
             while (threadState.get() != ThreadState.STOPPED) {
                 Thread.sleep(1);

@@ -39,7 +39,7 @@ public class InterpreterServerCancelTest extends AbstractInterpreterServerTest {
 
         // VERIFY
         for (int i = 0; i < 5; ++i) {
-            assertTrue(tasks[i].isCancelled());
+            assertTrue(tasks[i].isCanceled());
         }
     }
 
@@ -61,7 +61,7 @@ public class InterpreterServerCancelTest extends AbstractInterpreterServerTest {
         }
 
         // VERIFY
-        assertTrue(task.isCancelled());
+        assertTrue(task.isCanceled());
         assertTrue(task.getProgress() < 1.0);
 
         if (!errorsConsumer.toString().isEmpty()) {
