@@ -26,4 +26,11 @@ public class ASTAddOperationNode extends ASTNode {
             operation.interpret(ctx);
         }
     }
+
+    @Override
+    protected ASTNode compact() {
+        return (children.size() == 1) ?
+            children.get(0).compact() :
+            this;
+    }
 }

@@ -1,5 +1,6 @@
 package com.borunovv.jetpreter.ast;
 
+import com.borunovv.jetpreter.core.util.SystemConstants;
 import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 import com.borunovv.jetpreter.javacc.generated.Token;
@@ -8,8 +9,6 @@ import com.borunovv.jetpreter.javacc.generated.Token;
  * @author borunovv
  */
 public class ASTPrintStatementNode extends ASTNode {
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     public ASTPrintStatementNode(SimpleNode wrappedNode) {
         super(wrappedNode);
     }
@@ -26,7 +25,7 @@ public class ASTPrintStatementNode extends ASTNode {
     }
 
     private String unEscape(String str) {
-        return str.replaceAll("\\\\n", LINE_SEPARATOR)
+        return str.replaceAll("\\\\n", SystemConstants.LINE_SEPARATOR)
                 .replaceAll("\\\\t", "\t");
     }
 }

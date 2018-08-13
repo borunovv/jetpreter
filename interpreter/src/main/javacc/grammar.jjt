@@ -31,7 +31,7 @@
     io_print             =  kw_print quoted_str
     io_out               =  kw_out expession
 
-    expression            =  add_operation
+    expression           =  add_operation
     add_operation        =  mul_operation [add_operator mul_operation]*
     mul_operation        =  power_operation [mul_operator power_operation]*
     power_operation      =  factor [power_operator factor]
@@ -77,6 +77,7 @@ TOKEN : /*KEY WORDS*/
     < KW_VAR   : "var" >
 |   < KW_PRINT : "print" >
 |   < KW_OUT   : "out" >
+|   < KW_LAMBDA_ARROW : "->" >
 }
 
 TOKEN : /* LITERALS */
@@ -189,7 +190,16 @@ void PowerOperation() :
 void Factor() #void :
 {}
 {
-    Number() | VarId() |     "(" Expression() ")"
+    Number()
+  |
+    LOOKAHEAD(2)
+    FunctionCall()
+  |
+    VarId()
+  |
+    "(" Expression() ")"
+  |
+    Range()
 }
 
 
@@ -243,3 +253,44 @@ void VarId() :
     <IDENTIFIER>
 }
 
+
+/*
+  function_call        =  identifier "(" parameter_list ")"
+  parameter_list       =  [ parameter ("," parameter)* ]
+  parameter            =  expression | lambda
+  lambda               =  variable_id [variable_id] lambda_arrow expression
+*/
+void FunctionCall() :
+{}
+{
+    <IDENTIFIER> "(" ParameterList() ")"
+}
+
+
+void ParameterList() #void:
+{}
+{
+    [Parameter() ("," Parameter())*]
+}
+
+void Parameter() #void:
+{}
+{
+    LOOKAHEAD(3) /*Here we assume lambda has no more than 2 arguments*/
+    Lambda()
+  |
+    Expression()
+}
+
+void Lambda() :
+{}
+{
+    VarId() [ VarId() ] <KW_LAMBDA_ARROW> Expression()
+}
+
+
+void Range() :
+{}
+{
+    "{" Expression() "," Expression() "}"
+}

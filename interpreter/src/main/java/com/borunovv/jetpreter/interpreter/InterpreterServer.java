@@ -2,6 +2,7 @@ package com.borunovv.jetpreter.interpreter;
 
 import com.borunovv.jetpreter.core.log.Log;
 import com.borunovv.jetpreter.core.threads.WithOwnThread;
+import com.borunovv.jetpreter.core.util.SystemConstants;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,7 +15,7 @@ public class InterpreterServer extends WithOwnThread {
 
     private final AtomicReference<ProgramTask> pendingProgramRef = new AtomicReference<>(null);
     private final Interpreter interpreter = new Interpreter();
-    private ProcessingState verificationState;
+    private InterpretationState interpretationState;
     private ProgramTask currentProgramTask;
     private volatile int debugDelayMillisPerLine = 0;
 
@@ -101,16 +102,16 @@ public class InterpreterServer extends WithOwnThread {
             }
             case PROCESSING: {
                 if (needCancelCurrentTask) {
-                    stopVerification();
+                    stopInterpretation();
                     state = State.READY;
                 } else {
-                    boolean finished = !continueVerification();
+                    boolean finished = !continueInterpretation();
                     if (finished) {
-                        stopVerification();
+                        stopInterpretation();
                         completeCurrentTask();
                         state = State.READY;
                     } else {
-                        currentProgramTask.setProgress(verificationState.getProgress());
+                        currentProgramTask.setProgress(interpretationState.getProgress());
                     }
                 }
                 break;
@@ -133,20 +134,20 @@ public class InterpreterServer extends WithOwnThread {
         currentProgramTask = null;
     }
 
-    private boolean continueVerification() {
+    private boolean continueInterpretation() {
         // Used for debug slow down.
         if (debugDelayMillisPerLine > 0) {
             sleep(debugDelayMillisPerLine);
         }
-        return verificationState != null && verificationState.processNextLine();
+        return interpretationState != null && interpretationState.processNextLine();
     }
 
     private void startVerification(Consumer<String> output, Consumer<String> errors) {
-        verificationState = new ProcessingState(output, errors);
+        interpretationState = new InterpretationState(output, errors);
     }
 
-    private void stopVerification() {
-        verificationState = null;
+    private void stopInterpretation() {
+        interpretationState = null;
     }
 
     private ProgramTask tryGetPendingProgramTask() {
@@ -165,13 +166,13 @@ public class InterpreterServer extends WithOwnThread {
         this.debugDelayMillisPerLine = delayMillisPerLine;
     }
 
-    private class ProcessingState {
+    private class InterpretationState {
         private final Consumer<String> errors;
         private int linesProcessed = 0;
         private final InterpreterSession session;
         private String lastError;
 
-        public ProcessingState(Consumer<String> output, Consumer<String> errors) {
+        public InterpretationState(Consumer<String> output, Consumer<String> errors) {
             this.errors = errors;
             this.session = interpreter.startInterpretation(output);
         }
@@ -183,7 +184,7 @@ public class InterpreterServer extends WithOwnThread {
                 linesProcessed++;
                 if (error != null) {
                     lastError = "Error in line #" + lineNumberInSource + ": " + error;
-                    errors.accept(lastError + "\n");
+                    errors.accept(lastError + SystemConstants.LINE_SEPARATOR);
                 }
             }
             return canContinue();

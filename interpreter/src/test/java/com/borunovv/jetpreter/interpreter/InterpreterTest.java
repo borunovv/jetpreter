@@ -1,10 +1,11 @@
 package com.borunovv.jetpreter.interpreter;
 
+import com.borunovv.jetpreter.core.util.SystemConstants;
 import org.junit.Test;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class InterpreterTest {
 
@@ -47,10 +48,10 @@ public class InterpreterTest {
                 }
             }
         }
-//        System.out.println("\nOutput:\n");
-//        System.out.println(outputBuffer.toString());
+        String expected = "Hello, world!" + SystemConstants.LINE_SEPARATOR +
+                "result=-5497.401761247628" + SystemConstants.LINE_SEPARATOR;
 
-        assertEquals("Hello, world!\n" + "result=-5497.401761247628\n", outputBuffer.toString());
+        assertEquals(expected, outputBuffer.toString());
     }
 
     private static void showProgram(String program) {

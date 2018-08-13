@@ -1,9 +1,11 @@
 package com.borunovv.jetpreter.interpreter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.borunovv.jetpreter.core.contract.Precondition;
+import com.borunovv.jetpreter.interpreter.functions.Function;
+import com.borunovv.jetpreter.interpreter.functions.FunctionMap;
+import com.borunovv.jetpreter.interpreter.types.Value;
+
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -12,26 +14,36 @@ import java.util.function.Consumer;
 public class Context {
 
     private static Set<String> KEY_WORDS = new HashSet<>();
+    private static Map<String, Function> functions = new TreeMap<>();
 
     static {
         KEY_WORDS.add("var");
         KEY_WORDS.add("print");
         KEY_WORDS.add("out");
+
+        registerFunction(new FunctionMap());
     }
 
-    private ArrayListStack<Object> stack = new ArrayListStack<>();
-    private Map<String, Object> variables = new HashMap<>();
+    private static void registerFunction(FunctionMap function) {
+        Precondition.expected(!functions.containsKey(function.getName()),
+                "Function already registered: " + function.getName() + ".");
+        functions.put(function.getName(), function);
+    }
+
+    private ArrayListStack<Value> stack = new ArrayListStack<>();
+    private Map<String, Value> variables = new HashMap<>();
     private Consumer<String> output;
+
 
     public Context(Consumer<String> output) {
         this.output = output;
     }
 
-    public void push(Object item) {
+    public void push(Value item) {
         stack.push(item);
     }
 
-    public Object pop() {
+    public Value pop() {
         return stack.pop();
     }
 
@@ -39,11 +51,11 @@ public class Context {
         return variables.containsKey(name);
     }
 
-    public void setVariable(String name, Object value) {
+    public void setVariable(String name, Value value) {
         variables.put(name, value);
     }
 
-    public Object getVariable(String name) {
+    public Value getVariable(String name) {
         return variables.get(name);
     }
 
@@ -53,5 +65,13 @@ public class Context {
 
     public boolean isKeyWord(String name) {
         return KEY_WORDS.contains(name);
+    }
+
+    public Consumer<String> getOutput() {
+        return output;
+    }
+
+    public Function getFunction(String name) {
+        return functions.get(name);
     }
 }

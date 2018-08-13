@@ -24,6 +24,10 @@ public abstract class ASTNode {
 
     public abstract void interpret(Context ctx);
 
+    public void dump(StringBuilder writer) {
+       dump(writer, 0);
+    }
+
     public void dump(StringBuilder writer, int level) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; ++i) {
@@ -43,6 +47,13 @@ public abstract class ASTNode {
 
     protected Token getLastToken() {
         return wrappedNode.jjtGetLastToken();
+    }
+
+    protected ASTNode compact() {
+        for (int i = 0; i < children.size(); i++) {
+            children.set(i, children.get(i).compact()); // recursion
+        }
+        return this;
     }
 
     @Override

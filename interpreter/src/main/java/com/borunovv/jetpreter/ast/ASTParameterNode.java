@@ -7,8 +7,8 @@ import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 /**
  * @author borunovv
  */
-public class ASTVarIdNode extends ASTNode {
-    public ASTVarIdNode(SimpleNode wrappedNode) {
+public class ASTParameterNode extends ASTNode {
+    public ASTParameterNode(SimpleNode wrappedNode) {
         super(wrappedNode);
     }
 

@@ -1,7 +1,8 @@
 package com.borunovv.jetpreter.ast;
 
-import com.borunovv.jetpreter.interpreter.Arithmetics;
+import com.borunovv.jetpreter.core.util.SystemConstants;
 import com.borunovv.jetpreter.interpreter.Context;
+import com.borunovv.jetpreter.interpreter.types.Value;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 
 /**
@@ -16,9 +17,8 @@ public class ASTOutStatementNode extends ASTNode {
     public void interpret(Context ctx) {
         // <KW_OUT> Expression()
         children.get(0).interpret(ctx);
-        Object value = ctx.pop();
-        String valueStr = Arithmetics.toString(value);
-        ctx.writeToOutput(valueStr);
-        ctx.writeToOutput("\n");
+        Value value = ctx.pop();
+        ctx.writeToOutput(value.toString());
+        ctx.writeToOutput(SystemConstants.LINE_SEPARATOR);
     }
 }

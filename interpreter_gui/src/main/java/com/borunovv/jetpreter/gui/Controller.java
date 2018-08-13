@@ -19,12 +19,10 @@ public class Controller {
     }
 
     void setUp() {
-        Log.trace("Controller: setting up");
         server.start();
     }
 
     void tearDown() {
-        Log.trace("Controller: tearing down");
         try {
             server.stopAndWait();
         } catch (InterruptedException e) {

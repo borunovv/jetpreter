@@ -2,6 +2,7 @@ package com.borunovv.jetpreter.ast;
 
 import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.interpreter.InterpretException;
+import com.borunovv.jetpreter.interpreter.types.ValueDouble;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 import com.borunovv.jetpreter.javacc.generated.Token;
 
@@ -17,8 +18,8 @@ public class ASTFloatNumberNode extends ASTNode {
     public void interpret(Context ctx) {
         Token t = getFirstToken();
         try {
-            Double value = Double.parseDouble(t.image);
-            ctx.push(value);
+            double value = Double.parseDouble(t.image);
+            ctx.push(new ValueDouble(value));
         } catch (NumberFormatException e) {
             throw new InterpretException("Bad float number: '" + t.image + "'", e);
         }

@@ -11,10 +11,14 @@ import static com.borunovv.jetpreter.javacc.generated.ProgramParserTreeConstants
 public class ASTNodeFactory {
 
     public static ASTNode buildTree(Node node) {
+        return buildFullTree(node).compact();
+    }
+
+    private static ASTNode buildFullTree(Node node) {
         ASTNode astNode = create(node);
         for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
             // depth-first recursion
-            astNode.addChild(buildTree(node.jjtGetChild(i)));
+            astNode.addChild(buildFullTree(node.jjtGetChild(i)));
         }
         return astNode;
     }
@@ -52,6 +56,12 @@ public class ASTNodeFactory {
                 return new ASTPowerOperatorNode(simpleNode);
             case JJTVARID :
                 return new ASTVarIdNode(simpleNode);
+            case JJTFUNCTIONCALL:
+                return new ASTFunctionCallNode(simpleNode);
+            case JJTLAMBDA:
+                return new ASTLambdaNode(simpleNode);
+            case JJTRANGE:
+                return new ASTRangeNode(simpleNode);
 
             default:
                 throw new IllegalArgumentException("Unimplemented node type: " + simpleNode.getId());

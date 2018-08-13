@@ -2,6 +2,7 @@ package com.borunovv.jetpreter.ast;
 
 import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.interpreter.InterpretException;
+import com.borunovv.jetpreter.interpreter.types.Value;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 import com.borunovv.jetpreter.javacc.generated.Token;
 
@@ -25,7 +26,7 @@ public class ASTVarAssignmentNode extends ASTNode {
         }
 
         expr.interpret(ctx);
-        Object value = ctx.pop();
+        Value value = ctx.pop();
 
         ctx.setVariable(varName, value);
     }
