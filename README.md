@@ -14,3 +14,7 @@ out pi
 mvn clean package
 java -jar interpreter_gui/target/interpreter_gui-1.0.jar
 ```
+
+**Screenshots**
+
+![Windows](https://github.com/borunovv/jetpreter/blob/master/screenshots/win01.jpg "Version 1.0 on Windows")
