@@ -2,4 +2,6 @@
 target
 *.iml
 log.txt
+atlassian-ide-plugin.xml
+doc
 
