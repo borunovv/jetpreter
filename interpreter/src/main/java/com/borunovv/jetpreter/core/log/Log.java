@@ -3,6 +3,11 @@ package com.borunovv.jetpreter.core.log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Logger
+ *
+ * @author borunovv
+ */
 public final class Log {
     private static Logger logger = LoggerFactory.getLogger(Log.class);
     private Log() {}

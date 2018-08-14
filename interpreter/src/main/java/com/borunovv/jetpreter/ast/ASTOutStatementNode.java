@@ -6,6 +6,8 @@ import com.borunovv.jetpreter.interpreter.types.Value;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 
 /**
+ * AST tree node for OutStatement() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTOutStatementNode extends ASTNode {
@@ -13,9 +15,14 @@ public class ASTOutStatementNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node's child expression.
+     * Then get result from stack and print it to output.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
-        // <KW_OUT> Expression()
         children.get(0).interpret(ctx);
         Value value = ctx.pop();
         ctx.writeToOutput(value.toString());

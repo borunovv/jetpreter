@@ -5,6 +5,8 @@ import com.borunovv.jetpreter.interpreter.InterpretException;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 
 /**
+ * AST tree node for Program() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTProgramNode extends ASTNode {
@@ -12,6 +14,11 @@ public class ASTProgramNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node. Put result onto the stack.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         int lineNumber = 0;
@@ -21,6 +28,13 @@ public class ASTProgramNode extends ASTNode {
         }
     }
 
+    /**
+     * Interpret one line of program code.
+     *
+     * @param ctx        Interpretation context
+     * @param lineNumber line number in source code
+     * @param line AST line node
+     */
     private void interpretLine(Context ctx, int lineNumber, ASTNode line) {
         try {
             line.interpret(ctx);

@@ -7,6 +7,8 @@ import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 import com.borunovv.jetpreter.javacc.generated.Token;
 
 /**
+ * AST tree node for FloatNumber() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTFloatNumberNode extends ASTNode {
@@ -14,6 +16,11 @@ public class ASTFloatNumberNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node. Put result onto the stack.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         Token t = getFirstToken();

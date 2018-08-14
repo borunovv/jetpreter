@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * AST tree node for Range() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTRangeNode extends ASTNode {
@@ -18,6 +20,11 @@ public class ASTRangeNode extends ASTNode {
 
     private static final long MAX_RANGE_SIZE = 1000000;
 
+    /**
+     * Interpret the current node. Put result onto the stack.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         ASTNode first = children.get(0);
@@ -50,6 +57,13 @@ public class ASTRangeNode extends ASTNode {
         ctx.push(new ValueList(generateList(leftBound, rightBound)));
     }
 
+    /**
+     * Generate list of integer numbers from interval [from, to] (inclusive both bounds).
+     *
+     * @param from left bound (inclusive)
+     * @param to   right bound (inclusive)
+     * @return list of integer numbers from interval [from, to] (inclusive both bounds).
+     */
     private List<ValueScalar> generateList(long from, long to) {
         List<ValueScalar> result = new ArrayList<>((int) (to - from + 1));
         for (long item = from; item <= to; ++item) {

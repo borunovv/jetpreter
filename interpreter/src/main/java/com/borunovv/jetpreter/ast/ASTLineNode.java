@@ -4,6 +4,8 @@ import com.borunovv.jetpreter.interpreter.Context;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 
 /**
+ * AST tree node for Line() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTLineNode extends ASTNode {
@@ -11,6 +13,11 @@ public class ASTLineNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         for (ASTNode child : children) {

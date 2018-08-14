@@ -5,6 +5,8 @@ import com.borunovv.jetpreter.interpreter.InterpretException;
 import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 
 /**
+ * AST tree node for VarId() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTVarIdNode extends ASTNode {
@@ -12,6 +14,12 @@ public class ASTVarIdNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node.
+     * Takes value from context and push it onto the stack.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         String varName = getVarName();

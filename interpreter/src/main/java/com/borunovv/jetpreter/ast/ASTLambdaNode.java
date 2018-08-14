@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * AST tree node for IntNumber() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTLambdaNode extends ASTNode {
@@ -15,6 +17,11 @@ public class ASTLambdaNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node. Put result onto the stack.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         Context lambdaCtx = ctx.cloneForLambda();
@@ -25,7 +32,8 @@ public class ASTLambdaNode extends ASTNode {
             ctx.checkCancel();
             String paramName = paramNames.get(i);
             if (lambdaCtx.hasVariable(paramName)) {
-                throw new InterpretException("Lambda parameter names must be unique. Duplicated parameter name is '" + paramName + "'.");
+                throw new InterpretException(
+                        "Lambda parameter names must be unique. Duplicated parameter name is '" + paramName + "'.");
             }
             lambdaCtx.setVariable(paramNames.get(i), ctx.pop());
         }
@@ -36,10 +44,22 @@ public class ASTLambdaNode extends ASTNode {
         ctx.push(lambdaCtx.pop());
     }
 
+    /**
+     * Return lambda params count.
+     * For lambda like this 'a b -> a+b' the params count is 2 (a and b).
+     *
+     * @return lambda params count
+     */
     public int getParamsCount() {
         return getParamNames().size();
     }
 
+    /**
+     * Return lambda param names.
+     * For lambda like this 'a b -> a+b' the result will be ["a", "b"].
+     *
+     * @return lambda param names
+     */
     public List<String> getParamNames() {
         List<String> names = new ArrayList<>();
         for (int i = 0; i < children.size() - 1; ++i) {

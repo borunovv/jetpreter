@@ -7,6 +7,8 @@ import com.borunovv.jetpreter.javacc.generated.SimpleNode;
 import com.borunovv.jetpreter.javacc.generated.Token;
 
 /**
+ * AST tree node for VarAssignment() (see grammar.jjt)
+ *
  * @author borunovv
  */
 public class ASTVarAssignmentNode extends ASTNode {
@@ -14,6 +16,11 @@ public class ASTVarAssignmentNode extends ASTNode {
         super(wrappedNode);
     }
 
+    /**
+     * Interpret the current node.
+     *
+     * @param ctx Interpretation context.
+     */
     @Override
     public void interpret(Context ctx) {
         // <IDENTIFIER> <EQUALS> Expression()
@@ -27,7 +34,6 @@ public class ASTVarAssignmentNode extends ASTNode {
 
         expr.interpret(ctx);
         Value value = ctx.pop();
-
         ctx.setVariable(varName, value);
     }
 }
