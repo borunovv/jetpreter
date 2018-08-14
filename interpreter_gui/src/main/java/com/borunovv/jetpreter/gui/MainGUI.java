@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 
-public class MainGUI implements Model {
+public class MainGUI implements View {
     private static final String INITIAL_SAMPLE_PROGRAM = "" +
             "print \"Hello, world!\\n\"\n" +
             "var n = 1000\n" +

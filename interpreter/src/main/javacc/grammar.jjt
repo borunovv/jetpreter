@@ -16,8 +16,8 @@
     power_operator   = "^"
     identifier       = letter (letter | digit | "_")*
     quoted_str       = '"' (~['"'])* '"'
-    int              = ["-"] (digit)+
-    float            = ["-"] ((digit)+ "." (digit)*  |  "." (digit)+)
+    int              = (digit)+
+    float            = ((digit)+ "." (digit)*  |  "." (digit)+)
 
     -- Non terminals--
 
@@ -83,12 +83,14 @@ TOKEN : /*KEY WORDS*/
 TOKEN : /* LITERALS */
 {
     < EOL          : "\n" | "\r" | "\r\n" >
-|   < ADD_OPERATOR : "+" | "-" >
-|   < MUL_OPERATOR : "*" | "/" >
-|   < POW_OPERATOR : "^" >
 |   < EQUALS       : "=" >
-|   < FLOAT        : <INTEGER> "." (<DIGITS>)? | (["-"])? "." <DIGITS> >
-|   < INTEGER      : (["-"])? <DIGITS> >
+|   < PLUS         : "+" >
+|   < MINUS        : "-" >
+|   < MULTIPLY     : "*" >
+|   < DIVIDE       : "/" >
+|   < POWER_OP     : "^" >
+|   < FLOAT        : <DIGITS> "." (<DIGITS>)? | "." <DIGITS> >
+|   < INTEGER      : <DIGITS> >
 |   < IDENTIFIER   : <LETTER> (<LETTER> | <DIGIT> | "_")* >
 |   < QUOTED_STR   : "\"" (~["\""])* "\"">
 |   < #LETTER      : ["A" - "Z", "a" - "z"] >
@@ -163,7 +165,7 @@ void OutStatement() :
 void Expression() #void:
 {}
 {
-    AddOperation()
+    AddOperation() | Range()
 }
 
 
@@ -190,37 +192,47 @@ void PowerOperation() :
 void Factor() #void :
 {}
 {
-    Number()
-  |
-    LOOKAHEAD(2)
-    FunctionCall()
-  |
-    VarId()
-  |
-    "(" Expression() ")"
-  |
-    Range()
+    SignedFactor()
 }
 
+void SignedFactor() :
+{}
+{
+    [<MINUS>]
+    (
+        Number()
+      |
+        LOOKAHEAD(2)
+        FunctionCall()
+      |
+        VarId()
+      |
+        "(" Expression() ")"
+    )
+}
 
 void AddOperator() :
 {}
 {
-    <ADD_OPERATOR>
+    <PLUS>
+  |
+    <MINUS>
 }
 
 
 void MulOperator() :
 {}
 {
-    <MUL_OPERATOR>
+    <MULTIPLY>
+  |
+    <DIVIDE>
 }
 
 
 void PowerOperator() :
 {}
 {
-    <POW_OPERATOR>
+    <POWER_OP>
 }
 
 

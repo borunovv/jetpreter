@@ -2,7 +2,6 @@ package com.borunovv.jetpreter.interpreter;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class InterpreterServerProgramSequenceTest extends AbstractInterpreterServerTest {
@@ -56,7 +55,7 @@ public class InterpreterServerProgramSequenceTest extends AbstractInterpreterSer
                 "This is Program_2\n" +
                 "64.0\n";
 
-        assertEquals(expectedOutput, outputConsumer.toString());
+        assertEqualsIgnoreLineSeparator(expectedOutput, outputConsumer.toString());
         assertTrue(errorsConsumer.toString().isEmpty());
     }
 
@@ -88,16 +87,10 @@ public class InterpreterServerProgramSequenceTest extends AbstractInterpreterSer
         waitCondition("Task #2 must finish.", 10000, task2::isFinished);
 
         // VERIFY
-        System.out.println("Output1:\n" + output1.toString());
-        System.out.println("Errors1:\n" + errors1.toString());
+        assertEqualsIgnoreLineSeparator("This is Program_1 with bug in line #3\n", output1.toString());
+        assertEqualsIgnoreLineSeparator("Error in line #3: Undefined variable: 'bugbugbug'. Forgot to declare ?\n", errors1.toString());
 
-        System.out.println("Output2:\n" + output2.toString());
-        System.out.println("Errors2:\n" + errors2.toString());
-
-        assertEquals("This is Program_1 with bug in line #3\n", output1.toString());
-        assertEquals("Error in line #3: Undefined variable: 'bugbugbug'. Forgot to declare ?\n", errors1.toString());
-
-        assertEquals("This is Program_2 with bug in line #4\n", output2.toString());
-        assertEquals("Error in line #4: Undefined variable: 'bugbugbug'. Forgot to declare ?\n", errors2.toString());
+        assertEqualsIgnoreLineSeparator("This is Program_2 with bug in line #4\n", output2.toString());
+        assertEqualsIgnoreLineSeparator("Error in line #4: Undefined variable: 'bugbugbug'. Forgot to declare ?\n", errors2.toString());
     }
 }

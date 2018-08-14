@@ -1,6 +1,6 @@
 package com.borunovv.jetpreter.gui;
 
-public interface Model {
+public interface View {
     void setProgress(double progress);
     void appendOutput(String text);
     void clearOutput();

@@ -11,6 +11,7 @@ import java.io.StringReader;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractInterpreterServerTest {
@@ -63,9 +64,19 @@ public abstract class AbstractInterpreterServerTest {
 
     protected void assertProgramOutput(String program, String expectedOutput) {
         String output = interpretProgram(program);
+        assertEqualsIgnoreLineSeparator(expectedOutput, output);
+    }
+
+    protected void assertEqualsIgnoreLineSeparator(String expected, String actual) {
         assertEquals(
-                expectedOutput.trim().replaceAll("\r\n", "\n"),
-                output.trim().replaceAll("\r\n", "\n"));
+                expected.trim().replaceAll("\r\n", "\n"),
+                actual.trim().replaceAll("\r\n", "\n"));
+    }
+
+    protected void assertProgramOutputHasError(String program, String error) {
+        String output = interpretProgram(program);
+        assertTrue("Expected error: [" + error + "]\nActual output: " + output,
+                output.contains(error));
     }
 
     protected String renderASTTree(String program) {

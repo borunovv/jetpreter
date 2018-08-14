@@ -21,7 +21,7 @@ public class InterpreterServerCancelTest extends AbstractInterpreterServerTest {
     @Test
     public void cancelCurrentTaskAfterNewProgramSubmit() throws InterruptedException {
         // ARRANGE
-        server.setDebugSlowDownPerLine(100);
+        server.setDebugSlowDownPerLine(10);
         final StringConsumer errorsConsumer = new StringConsumer();
         InterpreterServer.IProgramTask[] tasks = new InterpreterServer.IProgramTask[5];
 
@@ -29,12 +29,12 @@ public class InterpreterServerCancelTest extends AbstractInterpreterServerTest {
         for (int i = 0; i < 5; ++i) {
             tasks[i] = server.submitProgram(PROGRAM_WITH_SYNTAX_ERROR_AT_LAST_LINE, new DevNull(), errorsConsumer);
             while (tasks[i].getProgress() < 0.5) {
-                Thread.sleep(10);
+                Thread.sleep(1);
             }
         }
         tasks[4].cancel();
         while (server.getState() != InterpreterServer.State.READY) {
-            Thread.sleep(10);
+            Thread.sleep(1);
         }
 
         // VERIFY

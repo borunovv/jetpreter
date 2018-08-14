@@ -48,6 +48,8 @@ public class ASTNodeFactory {
                 return new ASTMulOperationNode(simpleNode);
             case JJTPOWEROPERATION:
                 return new ASTPowerOperationNode(simpleNode);
+            case JJTSIGNEDFACTOR:
+                return new ASTSignedFactorNode(simpleNode);
             case JJTADDOPERATOR :
                 return new ASTAddOperatorNode(simpleNode);
             case JJTMULOPERATOR :

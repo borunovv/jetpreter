@@ -8,7 +8,7 @@ public class Controller {
     public static final int USER_INACTIVITY_TIMEOUT_MS = 1000;
     public static final int IDLE_PROCESSING_PERIOD_MS = 50;
 
-    private final Model model;
+    private final View view;
     private final InterpreterServer server = new InterpreterServer();
     private Task currentTask;
     private String pendingProgram;
@@ -16,8 +16,8 @@ public class Controller {
     private long lastIdleProcessedTime = 0;
 
 
-    public Controller(Model model) {
-        this.model = model;
+    public Controller(View view) {
+        this.view = view;
     }
 
     void setUp() {
@@ -45,11 +45,12 @@ public class Controller {
     void onSourceCodeChanged(String program) {
         lastUserActivityTime = System.currentTimeMillis();
         pendingProgram = program;
+        cancelCurrentTask();
     }
 
     private void updateCurrentProgress() {
         if (currentTask != null) {
-           model.setProgress(currentTask.getProgress());
+           view.setProgress(currentTask.getProgress());
         }
     }
 
@@ -74,8 +75,8 @@ public class Controller {
         if (currentTask != null) {
             currentTask.cancel();
             currentTask = null;
-            model.clearOutput();
-            model.setProgress(0);
+            view.clearOutput();
+            view.setProgress(0);
         }
     }
 
@@ -102,13 +103,13 @@ public class Controller {
 
         void writeToOutput(String str) {
             if (!disableOutput) {
-                model.appendOutput(str);
+                view.appendOutput(str);
             }
         }
 
         void writeToErrors(String error) {
             if (!disableOutput) {
-                model.appendOutputFromNewLine(error);
+                view.appendOutputFromNewLine(error);
             }
         }
     }

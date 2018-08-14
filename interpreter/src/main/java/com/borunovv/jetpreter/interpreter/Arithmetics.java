@@ -40,7 +40,7 @@ public class Arithmetics {
     public static Value divide(Value left, Value right) {
         ensureScalars(left, right);
         if (Math.abs(toDouble(right)) == 0.0) {
-            throw new InterpretException("Division by zero");
+            throw new InterpretException("Division by zero.");
         }
         if (atLeastOneIsDouble(left, right)) {
             return new ValueDouble(toDouble(left) / toDouble(right));
@@ -57,7 +57,7 @@ public class Arithmetics {
     public static Value power(Value left, Value right) {
         ensureScalars(left, right);
         if (Math.abs(toDouble(left)) == 0.0 && toDouble(right) < 0.0) {
-            throw new InterpretException("Division by zero");
+            throw new InterpretException("Division by zero.");
         }
 
         return new ValueDouble(Math.pow(toDouble(left), toDouble(right)));

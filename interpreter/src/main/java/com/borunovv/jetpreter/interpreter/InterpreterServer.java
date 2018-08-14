@@ -130,8 +130,10 @@ public class InterpreterServer extends WithOwnThread {
     }
 
     private void completeCurrentTask() {
-        currentProgramTask.complete();
-        currentProgramTask = null;
+        if (!currentProgramTask.isCanceled()) {
+            currentProgramTask.complete();
+            currentProgramTask = null;
+        }
     }
 
     private boolean continueInterpretation() {

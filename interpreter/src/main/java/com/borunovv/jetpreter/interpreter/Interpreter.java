@@ -18,6 +18,10 @@ public class Interpreter {
     public Interpreter() {
     }
 
+    public void updateProgram(String program) {
+        updateProgram(program, null);
+    }
+
     public void updateProgram(String program, CancelSignal cancelSignal) {
         String[] items = StringUtils.ensureString(program).split("\n");
         Map<String, ProgramLine> newCache = new HashMap<>();
@@ -37,7 +41,7 @@ public class Interpreter {
             lines.add(programLine);
             newCache.put(line, programLine);
 
-            if (cancelSignal.isCanceled()) {
+            if (cancelSignal != null && cancelSignal.isCanceled()) {
                 lines.clear();
                 throw new CancelException(lineNumberInSourceCode, "Canceled during program updating");
             }

@@ -5,7 +5,6 @@ import com.borunovv.jetpreter.interpreter.functions.Function;
 import com.borunovv.jetpreter.interpreter.functions.FunctionMap;
 import com.borunovv.jetpreter.interpreter.functions.FunctionReduce;
 import com.borunovv.jetpreter.interpreter.types.Value;
-import com.sun.istack.internal.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -38,7 +37,7 @@ public class Context {
     private Consumer<String> output;
     private final CancelSignal cancelSignal;
 
-    public Context(Consumer<String> output, @Nullable CancelSignal cancelSignal) {
+    public Context(Consumer<String> output, CancelSignal cancelSignal) {
         this.output = output;
         this.cancelSignal = cancelSignal;
     }
