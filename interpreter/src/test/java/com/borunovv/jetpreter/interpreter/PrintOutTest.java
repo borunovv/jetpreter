@@ -8,7 +8,7 @@ import static junit.framework.TestCase.assertEquals;
 public class PrintOutTest extends AbstractInterpreterServerTest {
 
     @Test
-    public void printTest() {
+    public void print() {
         // ARRANGE
         String program = "" +
                 "print \"Hello, \"\n" +
@@ -20,7 +20,7 @@ public class PrintOutTest extends AbstractInterpreterServerTest {
     }
 
     @Test
-    public void printWithEscapingTest() {
+    public void printWithEscaping() {
         // ARRANGE
         String program = "" +
                 "print \"Hello,\\n\"\n" +
@@ -33,7 +33,7 @@ public class PrintOutTest extends AbstractInterpreterServerTest {
     }
 
     @Test
-    public void outTest() {
+    public void out() {
         // ARRANGE
         String program = "out 1+2";
         // ACT

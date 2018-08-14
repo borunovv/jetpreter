@@ -5,7 +5,7 @@ import org.junit.Test;
 public class ReservedKeywordsTest extends AbstractInterpreterServerTest {
 
     @Test
-    public void varMapReduceTest() {
+    public void varMapReduce() {
         assertProgramOutput("var Var=1", "");
         assertProgramOutput("var VAr=1", "");
         assertProgramOutput("var VAR=1", "");

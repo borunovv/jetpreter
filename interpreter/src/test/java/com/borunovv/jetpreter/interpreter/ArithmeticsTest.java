@@ -117,7 +117,7 @@ public class ArithmeticsTest extends AbstractInterpreterServerTest {
     }
 
     @Test
-    public void parenthesesTest() {
+    public void parentheses() {
         assertProgramOutput("out (1+2)", "3");
         assertProgramOutput("out ((1+2))", "3");
         assertProgramOutput("out ((((1)+((2)))))", "3");
