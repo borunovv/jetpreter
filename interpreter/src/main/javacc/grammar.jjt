@@ -1,52 +1,3 @@
-/*
-    == Full Grammar EBNF ==
-
-    -- Terminals --
-
-    whitespace       = " " | "\t"
-    eol              = "\n" | "\r" | "\r\n"
-    kw_print         = "print"
-    kw_out           = "out"
-    kw_var           = "var"
-    lambda_arrow     = "->"
-    letter           = ["a"-"z""A"-"Z"]
-    digit            = ["0"-"9"]
-    add_operator     = "+" | "-"
-    mul_operator     = "*" | "/"
-    power_operator   = "^"
-    identifier       = letter (letter | digit | "_")*
-    quoted_str       = '"' (~['"'])* '"'
-    int              = (digit)+
-    float            = ((digit)+ "." (digit)*  |  "." (digit)+)
-
-    -- Non terminals--
-
-    program              = (line)* EOF
-    line                 = [statement] eol
-    statement            = io_procedure | var_declaration | var_assignment
-
-    var_declaration      =  kw_var variable_id "=" expession
-    var_assignment       =  variable_id "=" expession
-    io_procedure         =  io_print | io_out
-    io_print             =  kw_print quoted_str
-    io_out               =  kw_out expession
-
-    expression           =  add_operation
-    add_operation        =  mul_operation [add_operator mul_operation]*
-    mul_operation        =  power_operation [mul_operator power_operation]*
-    power_operation      =  factor [power_operator factor]
-    factor               =  number | variable_id | function_call | "(" expression ")"
-
-    function_call        =  identifier "(" parameter_list ")"
-    parameter_list       =  [ parameter ("," parameter)* ]
-    parameter            =  expression | lambda
-    lambda               =  variable_id (variable_id)* lambda_arrow expression
-
-    number               =  int | float
-    variable_id          =  identifier
-
-*/
-
 options {
     STATIC=false;
     TRACK_TOKENS=true;
@@ -98,17 +49,20 @@ TOKEN : /* LITERALS */
 |   < #DIGITS      : (<DIGIT>)+ >
 }
 
+
 void Program() :
 {}
 {
     (Line())* <EOF>
 }
 
+
 void Line() :
 {}
 {
     [ Statement() ] <EOL>
 }
+
 
 void Statement() #void:
 {}
@@ -189,11 +143,13 @@ void PowerOperation() :
     Factor() [ PowerOperator() Factor() ]
 }
 
+
 void Factor() #void :
 {}
 {
     SignedFactor()
 }
+
 
 void SignedFactor() :
 {}
@@ -210,6 +166,7 @@ void SignedFactor() :
         "(" Expression() ")"
     )
 }
+
 
 void AddOperator() :
 {}
@@ -253,11 +210,13 @@ void IntNumber() :
     <INTEGER>
 }
 
+
 void FloatNumber() :
 {}
 {
     <FLOAT>
 }
+
 
 void VarId() :
 {}
@@ -266,12 +225,6 @@ void VarId() :
 }
 
 
-/*
-  function_call        =  identifier "(" parameter_list ")"
-  parameter_list       =  [ parameter ("," parameter)* ]
-  parameter            =  expression | lambda
-  lambda               =  variable_id [variable_id] lambda_arrow expression
-*/
 void FunctionCall() :
 {}
 {
@@ -285,6 +238,7 @@ void ParameterList() #void:
     [Parameter() ("," Parameter())*]
 }
 
+
 void Parameter() #void:
 {}
 {
@@ -293,6 +247,7 @@ void Parameter() #void:
   |
     Expression()
 }
+
 
 void Lambda() :
 {}
