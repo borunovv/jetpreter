@@ -9,19 +9,30 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
+ * Program interpreter.
+ *
  * @author borunovv
  */
 public class Interpreter {
+    /**
+     * Cache of code lines. Used to speed up program updating.
+     */
     private Map<String, ProgramLine> cache = new HashMap<>();
+
+    /**
+     * Current program lines of code.
+     */
     private List<ProgramLine> lines = new ArrayList<>();
 
-    public Interpreter() {
+    Interpreter() {
     }
 
-    public void updateProgram(String program) {
-        updateProgram(program, null);
-    }
-
+    /**
+     * Update current program.
+     *
+     * @param program      New program
+     * @param cancelSignal Source of cancellation signal
+     */
     public void updateProgram(String program, CancelSignal cancelSignal) {
         String[] items = StringUtils.ensureString(program).split("\n");
         Map<String, ProgramLine> newCache = new HashMap<>();
@@ -49,19 +60,23 @@ public class Interpreter {
         cache = newCache;
     }
 
+    /**
+     * Return program lines count (excluding empty lines).
+     */
     public int linesCount() {
         return lines.size();
     }
 
-    public String verifyLine(int lineIndex) {
-        return lines.get(lineIndex).verify();
-    }
-
-    public int getLineNumberInSourceCode(int lineIndex) {
-        return lines.get(lineIndex).getLineNumberInSourceCode();
-    }
-
+    /**
+     * Start program interpretation.
+     *
+     * @param output       Program output (a.k.a 'stdout')
+     * @param cancelSignal Source of cancellation signal
+     * @return interpretation session
+     */
     public InterpreterSession startInterpretation(Consumer<String> output, CancelSignal cancelSignal) {
-        return new InterpreterSession(new ArrayList<>(lines), new Context(output, cancelSignal));
+        return new InterpreterSession(
+                new ArrayList<>(lines),
+                new Context(output, cancelSignal));
     }
 }

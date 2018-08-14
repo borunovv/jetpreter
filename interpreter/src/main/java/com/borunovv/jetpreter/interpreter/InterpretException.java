@@ -1,6 +1,8 @@
 package com.borunovv.jetpreter.interpreter;
 
 /**
+ * Interpretation exception
+ *
  * @author borunovv
  */
 public class InterpretException extends RuntimeException {

@@ -3,6 +3,8 @@ package com.borunovv.jetpreter.interpreter;
 import java.util.ArrayList;
 
 /**
+ * Simple stack based on {@link ArrayList}.
+ *
  * @author borunovv
  */
 public class ArrayListStack<T> {

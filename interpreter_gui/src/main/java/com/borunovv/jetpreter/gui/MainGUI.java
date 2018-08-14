@@ -11,7 +11,9 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-
+/**
+ * GUI view.
+ */
 public class MainGUI implements View {
     private static final String INITIAL_SAMPLE_PROGRAM = "" +
             "print \"Hello, world!\\n\"\n" +
@@ -32,6 +34,9 @@ public class MainGUI implements View {
         this.controller = new Controller(this);
     }
 
+    /**
+     * Start the GUI.
+     */
     public void start() {
         Log.trace("Application started");
         try {

@@ -39,6 +39,7 @@ public class RangeTest extends AbstractInterpreterServerTest {
     public void rangeBoundsAsRealExpressions() {
         assertProgramOutput("out {1.0+2+3,10.0-1-2}",
                 "Error in line #1: Range's left bound must be of type INT. Actual type is REAL.");
+
         assertProgramOutput("out {1,10.0-1-2}",
                 "Error in line #1: Range's right bound must be of type INT. Actual type is REAL.");
     }

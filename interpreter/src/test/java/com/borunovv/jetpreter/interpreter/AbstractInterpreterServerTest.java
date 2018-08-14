@@ -37,7 +37,7 @@ public abstract class AbstractInterpreterServerTest {
             while (System.currentTimeMillis() - start < millis && !condition.call()) {
                 Thread.sleep(1);
             }
-            if (! condition.call()) {
+            if (!condition.call()) {
                 throw new RuntimeException("Wait timeout (" + millis + " ms). Condition: " + conditionDescription);
             }
         } catch (Exception e) {
@@ -79,6 +79,13 @@ public abstract class AbstractInterpreterServerTest {
                 output.contains(error));
     }
 
+    /**
+     * Renders program AST tree as string.
+     * For debug purposes.
+     *
+     * @param program program to render as AST tree
+     * @return AST as string
+     */
     protected String renderASTTree(String program) {
         if (!program.endsWith("\n")) {
             program = program + "\n";

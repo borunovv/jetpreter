@@ -6,10 +6,27 @@ import com.borunovv.jetpreter.interpreter.types.ValueScalar;
 import com.borunovv.jetpreter.interpreter.types.ValueLong;
 
 /**
+ * Utility class to perform all supported arithmetic operations on different argument types.
+ * Supported operations are: '+', '-', '*', '/', '^' (power).
+ *
  * @author borunovv
  */
 public class Arithmetics {
 
+    /**
+     * Perform addition.
+     * Returned value type depends on input values type:
+     * <pre>
+     * int + int = int
+     * int + real = real
+     * real + int = real
+     * real + real = real
+     * </pre>
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @return left + right
+     */
     public static Value add(Value left, Value right) {
         ensureScalars(left, right);
         if (atLeastOneIsDouble(left, right)) {
@@ -19,6 +36,20 @@ public class Arithmetics {
         }
     }
 
+    /**
+     * Perform substraction.
+     * Returned value type depends on input values type:
+     * <pre>
+     * int - int = int
+     * int - real = real
+     * real - int = real
+     * real - real = real
+     * </pre>
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @return left - right
+     */
     public static Value substract(Value left, Value right) {
         ensureScalars(left, right);
         if (atLeastOneIsDouble(left, right)) {
@@ -28,6 +59,20 @@ public class Arithmetics {
         }
     }
 
+    /**
+     * Perform multiplication.
+     * Returned value type depends on input values type:
+     * <pre>
+     * int * int = int
+     * int * real = real
+     * real * int = real
+     * real * real = real
+     * </pre>
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @return left * right
+     */
     public static Value multiply(Value left, Value right) {
         ensureScalars(left, right);
         if (atLeastOneIsDouble(left, right)) {
@@ -37,6 +82,21 @@ public class Arithmetics {
         }
     }
 
+    /**
+     * Perform division.
+     * Returned value type depends on input values type:
+     * <pre>
+     * int / int = int (if no fraction occurred) or real
+     * int / real = real
+     * real / int = real
+     * real / real = real
+     * </pre>
+     * Can throw  {@link InterpretException} if division by zero occurred.
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @return left / right
+     */
     public static Value divide(Value left, Value right) {
         ensureScalars(left, right);
         if (Math.abs(toDouble(right)) == 0.0) {
@@ -54,6 +114,16 @@ public class Arithmetics {
         }
     }
 
+    /**
+     * Perform power operation.
+     * Returned value type always real. Example: 2^10 = 1024.0<br/>
+     * <p>
+     * Can throw  {@link InterpretException} if division by zero occurred.
+     *
+     * @param left  left operand
+     * @param right right operand
+     * @return left ^ right
+     */
     public static Value power(Value left, Value right) {
         ensureScalars(left, right);
         if (Math.abs(toDouble(left)) == 0.0 && toDouble(right) < 0.0) {
@@ -63,6 +133,12 @@ public class Arithmetics {
         return new ValueDouble(Math.pow(toDouble(left), toDouble(right)));
     }
 
+    /**
+     * Force convert value to double.
+     *
+     * @param number number value (expected scalar)
+     * @return double representation of given value
+     */
     private static double toDouble(Value number) {
         ensureScalar(number);
         return (number instanceof ValueDouble) ?
@@ -70,6 +146,12 @@ public class Arithmetics {
                 (double) ((ValueLong) number).getValue();
     }
 
+    /**
+     * Force convert value to long.
+     *
+     * @param number number value (expected scalar)
+     * @return long representation of given value
+     */
     private static long toLong(Value number) {
         ensureScalar(number);
         return (number instanceof ValueLong) ?
@@ -77,15 +159,31 @@ public class Arithmetics {
                 (long) ((ValueDouble) number).getValue();
     }
 
-    private static boolean atLeastOneIsDouble(Value left, Value right) {
-        return left instanceof ValueDouble || right instanceof ValueDouble;
+    /**
+     * Check if at least one of given arguments is of type ValueDouble.
+     *
+     * @return true if at least one of given parameters is of type ValueDouble
+     */
+    private static boolean atLeastOneIsDouble(Value first, Value second) {
+        return first instanceof ValueDouble
+                || second instanceof ValueDouble;
     }
 
-    private static void ensureScalars(Value num1, Value num2) {
-        ensureScalar(num1);
-        ensureScalar(num2);
+    /**
+     * Check if both of given arguments are scalars (of type ValueScalar).
+     *
+     * @return if both of given arguments are scalars (of type ValueScalar).
+     */
+    private static void ensureScalars(Value first, Value second) {
+        ensureScalar(first);
+        ensureScalar(second);
     }
 
+    /**
+     * Check if given value is scalar (of type ValueScalar).
+     *
+     * @return true, if given value is scalar (of type ValueScalar).
+     */
     private static void ensureScalar(Value value) {
         if (value instanceof ValueScalar) return;
         throw new InterpretException("Expected scalar value. Actual type: " + value.getTypeName());

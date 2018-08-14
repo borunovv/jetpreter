@@ -1,6 +1,8 @@
 package com.borunovv.jetpreter.interpreter.types;
 
 /**
+ * All supported types.
+ *
  * @author borunovv
  */
 public interface ValueTypes {

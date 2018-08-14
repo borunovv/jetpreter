@@ -42,7 +42,7 @@ public class MapReduceTest extends AbstractInterpreterServerTest {
     public void nestedMapInReduce() {
         // ARRANGE
         String program = "" +
-                "var result = reduce(map(map(map({1,10}, a -> a * 2), a -> a * 3), a -> a * 5), 0, accum next -> accum + next ^ 2)\n" +
+                "var result = reduce(map(map(map({1,10}, a -> a * 2), a -> a * 3), a -> a * 5), 0, sum x -> sum + x ^ 2)\n" +
                 "out result";
         // VERIFY
         assertProgramOutput(program, "346500.0");
