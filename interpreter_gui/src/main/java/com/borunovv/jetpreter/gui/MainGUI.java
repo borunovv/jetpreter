@@ -21,7 +21,10 @@ public class MainGUI implements View {
             "var sequence = map({0, n}, i -> (-1)^i / (2 * i + 1))\n" +
             "var pi = 4 * reduce(sequence, 0, x y -> x + y)\n" +
             "print \"pi = \"\n" +
-            "out pi\n";
+            "out pi\n" +
+            "var e = reduce(map({1, 20}, i -> 1 / reduce({1,i}, 1, a x -> a * x)), 1, a x -> a + x)\n" +
+            "print \"e = \"\n" +
+            "out e\n";
 
     private final Controller controller;
     private Display display;
