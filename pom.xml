@@ -11,6 +11,7 @@
 	<modules>
 		<module>multiplatform-swt-loader</module>
 		<module>interpreter_gui</module>
+		<module>interpreter_web</module>
 		<module>interpreter</module>
 	</modules>
 

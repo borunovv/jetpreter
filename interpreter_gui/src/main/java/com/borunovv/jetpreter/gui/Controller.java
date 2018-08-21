@@ -194,7 +194,7 @@ public class Controller {
         }
 
         /**
-         * Write string to prorram output (a.k.a 'stdout')
+         * Write string to program output (a.k.a 'stdout')
          * @param str string to write
          */
         void writeToOutput(String str) {

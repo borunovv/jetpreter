@@ -48,7 +48,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.borunovv.jetpreter.Main</mainClass>
+                  <mainClass>com.borunovv.jetpreter.web.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>

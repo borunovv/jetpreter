@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex">
+    <title>Jetpreter 1.0 (web version)</title>
+    <style>
+        body {
+            font-family: "Lucida Console", Monaco, monospace
+        }
+        
+        .black {
+            background-color: #222222;
+            color: #EEEEEE;
+        }
+        
+        .bigFont {
+            font-size: 150%;
+        }
+        
+        .bigFontAndBlack {
+            font-size: 14pt;
+            background-color: #111111;
+            color: #EEEEEE;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #555555;
+        }
+        
+        .bigFontAndGreen {
+            font-size: 12pt;
+            background-color: #222222;
+            color: #1EEE1E;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #555555;
+        }
+        
+        .bigFontAndBlackBtn {
+            font-size: 14pt;
+            background-color: #111111;
+            color: #EEEEEE;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #555555;
+            cursor: pointer;
+        }
+                
+        pre.wrap {
+            white-space: pre-wrap;       /* CSS 3 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
+        
+        .progress {
+            color: #226622;
+            background-color: #226622;
+        }
+        
+        .progressText {
+            color: #226622;
+            font-size: 10px;
+        }
+        
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #555;
+            margin: 1em 0;
+            padding: 0; 
+        }
+        
+        .log {
+            background-color: #222222;
+            color: #AAAAAA;
+            font-size: 100%;
+        }
+        
+</style>
+
+</head>
+
+<body class="black">
+
+<table>
+<tr>
+    <th>Program</th>
+    <th width="20px"></th>
+    <th>Output</th>
+</tr>
+<tr style="height:20px;"/>
+<tr>
+    <td valign="top">
+        <textarea id="programEdit" cols="80" rows="100" style="width:800px; height:600px;" maxlength="10000" class="bigFontAndBlack"></textarea>
+        </br>
+        <input type="button" id="btn" value="Run" onClick="updateProgram()" style="width:100px; height:30px;" class="bigFontAndBlackBtn"/>
+    </td>
+    <td/>
+    <td valign="top">
+        <textarea id="output" cols="80" rows="100" style="width:600px; height:600px;" maxlength="10000" readonly class="bigFontAndGreen"></textarea>
+        <table>
+            <tr>
+                <td align="left" width="80px">
+                    <pre class="progressText" id="progress">Progress:</pre>
+                </td>
+                <td>
+                    <pre id="progressbar" style="width:0px; height:5px;" class="progress"></pre>            
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+</table>
+
+<br/>
+<pre class="log" id="history"></pre>
+
+
+<script>
+var INITIAL_PROGRAM = ''
+    + 'var n = 500\n'
+    + 'var sequence = map({0, n}, i -> (-1)^i / (2 * i + 1))\n'
+    + 'var pi = 4 * reduce(sequence, 0, x y -> x + y)\n'
+    + 'print "pi = "\n'
+    + 'out pi';
+
+document.getElementById("btn").style.visibility = "hidden";
+document.getElementById("programEdit").value = INITIAL_PROGRAM;
+
+log("Connecting to server..");
+
+var socket = new WebSocket("ws://code4food.online:8899");
+
+socket.onopen = function() {
+  log("Connected successfully.");
+  document.getElementById("btn").style.visibility = "visible";
+};
+
+socket.onclose = function(event) {
+  if (event.wasClean) {
+    log('Connection closed gracefully');
+  } else {
+    log('Connection aborted'); // например, "убит" процесс сервера
+  }
+  log('Code: ' + event.code + ' Cause: ' + event.reason + ' (ensure server is running and press F5 to try again)');
+  document.getElementById("btn").style.visibility = "hidden";
+};
+
+
+var lastSession = 0;
+
+socket.onmessage = function(event) {
+  //log("Message from server: '<i><b>" + event.data + "'</b></i>");
+  var msg = JSON.parse(event.data);
+  var output = msg.output;
+  var session = msg.session;
+  var progress = msg.progress;
+  updateState(session, output, progress);
+};
+
+socket.onerror = function(error) {
+  log("Error " + error.message);
+};
+
+function log(line) {
+    var div = document.getElementById("history");   
+    div.innerHTML += line + '\n';    
+}
+
+function updateProgram(e) {
+    clear();  
+    var program = document.getElementById('programEdit').value;
+    if (program == null || program === undefined) program = "";
+    var request = {"type":"request", "action":"update_program", "program": program};
+    var json = JSON.stringify(request);
+    //log("Request: " + json);
+    socket.send(json);
+}
+
+var lastSession = 0;
+function updateState(session, output, progress) {
+    var outputBox = document.getElementById('output');
+    if (lastSession != session) {
+        lastSession = session;
+        outputBox.innerHTML = '';
+    }
+    if (output != null && output !== undefined && output.length > 0) {
+        outputBox.innerHTML += output;
+    }
+    updateProgress(progress);
+}
+
+function updateProgress(progress) {
+   document.getElementById('progress').innerHTML = 'Progress: ' + Math.round(progress * 100) + '%';
+   document.getElementById("progressbar").style.width=Math.round(progress * 520) + "px";
+}
+
+function clear() {
+    updateProgress(0);
+    var outputBox = document.getElementById('output');
+    outputBox.innerHTML = '';
+}
+
+</script>
+
+</body>
+</html>
