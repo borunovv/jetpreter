@@ -1,5 +1,5 @@
 # jetpreter
-Interpreter of simple script language with map/reduce and GUI.
+Interpreter of simple script language with map/reduce, lambdas and GUI.
 
 **Program example:**
 ```
